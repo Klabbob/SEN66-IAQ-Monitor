@@ -1,100 +1,145 @@
 # IAQ Monitor
 
-Indoor Air Quality Monitor using Lilygo T-Display S3 and Sensirion SEN66 sensor.
-
-## Hardware Requirements
-
-- Lilygo T-Display S3 (ESP32-S3)
-- Sensirion SEN66 Environmental Sensor
-- Battery (optional)
-
-## Pin Connections
-
-### Display (Pre-configured on T-Display S3)
-- MOSI: GPIO35
-- SCLK: GPIO36
-- CS: GPIO34
-- DC: GPIO37
-- RST: GPIO38
-- BL: GPIO33
-
-### Sensor (I2C)
-- SDA: GPIO18
-- SCL: GPIO19
-
-### Power Management
-- Battery ADC: GPIO4
-- Wake Button: GPIO0
+An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
 ## Features
 
-- Temperature and Humidity monitoring
-- VOC (Volatile Organic Compounds) detection
-- NOx (Nitrogen Oxides) measurement
-- Power-efficient operation with deep sleep support
-- Modern UI with LVGL
-- Battery monitoring
+- Real-time monitoring of:
+  - Particle mass concentrations (PM1.0, PM2.5, PM4.0, PM10.0)
+  - Environmental parameters (Temperature, Humidity)
+  - Air quality indices (VOC Index, NOx Index)
+  - Gas concentrations (CO2)
+- Raw sensor data access for debugging and calibration
+- Serial output with both processed and raw values
 
-## Development Environment
+## Hardware Requirements
 
-This project uses PlatformIO for development. Two environments are provided:
-- `development`: Debug output enabled, suitable for development
-- `production`: Optimized for deployment with minimal debug output
+- ESP32-S3 (Lilygo T-Display S3)
+- Sensirion SEN66 sensor
+- I2C connections:
+  - SDA: GPIO 18
+  - SCL: GPIO 17
+  - SEN66 I2C Address: 0x6B
 
-### Building and Flashing
+## Software Requirements
+
+- PlatformIO
+- Arduino Core for ESP32
+- Sensirion I2C SEN66 library (v1.2.0)
+- Sensirion Core library (v0.3.0)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Klabbob/IAQ-Monitor.git
+   ```
+
+2. Open the project in PlatformIO
+
+3. Install dependencies:
+   ```bash
+   pio lib install
+   ```
+
+4. Build and upload to your device
+
+## Sensor Data
+
+### Processed Values
+
+- Particle Mass Concentrations (μg/m³):
+  - PM1.0
+  - PM2.5
+  - PM4.0
+  - PM10.0
+
+- Environmental Parameters:
+  - Temperature (°C)
+  - Humidity (%RH)
+
+- Air Quality Indices (0-500):
+  - VOC Index
+  - NOx Index
+
+- Gas Concentration:
+  - CO2 (ppm)
+
+### Raw Values
+
+- Environmental Parameters:
+  - Raw Humidity: Scaled with factor 100 (RH [%] = value / 100)
+  - Raw Temperature: Scaled with factor 200 (T [°C] = value / 200)
+
+- Gas Sensors:
+  - Raw VOC: Raw ticks without scale factor
+  - Raw NOx: Raw ticks without scale factor
+  - Raw CO2: Not interpolated CO₂ concentration [ppm]
+
+### Raw Value Notes
+
+- If humidity or temperature values are unknown, 0x7FFF is returned
+- If VOC, NOx, or CO2 values are unknown, 0xFFFF is returned
+- During the first 10-11 seconds after power-on or device reset, NOx will be 0xFFFF
+- During the first 5-6 seconds after power-on or device reset, CO2 will be 0xFFFF
+
+## Serial Output
+
+The device outputs data in the following format:
+
+```
+Processed Sensor Readings:
+----------------------------------------
+Particle Mass Concentrations:
+  PM1.0: X.XX μg/m³
+  PM2.5: X.XX μg/m³
+  PM4.0: X.XX μg/m³
+  PM10.0: X.XX μg/m³
+
+Environmental Parameters:
+  Temperature: XX.XX °C
+  Humidity: XX.XX %RH
+
+Air Quality Indices:
+  VOC Index: XXX (0-500)
+  NOx Index: XXX (0-500)
+
+Gas Concentration:
+  CO2: XXX ppm
+
+Raw Sensor Values:
+----------------------------------------
+Environmental Parameters (Raw):
+  Humidity: XXXX (raw) = XX.XX %RH
+  Temperature: XXXX (raw) = XX.XX °C
+
+Gas Sensors (Raw):
+  VOC: XXXX (raw ticks)
+  NOx: XXXX (raw ticks)
+  CO2: XXXX (not interpolated [ppm])
+----------------------------------------
+```
+
+## Development
+
+### Building
 
 ```bash
-# Build for development
-pio run -e development
+pio run
+```
 
-# Build for production
-pio run -e production
+### Uploading
 
-# Upload to device (development)
-pio run -e development -t upload
+```bash
+pio run -t upload
+```
 
-# Monitor serial output
+### Monitoring
+
+```bash
 pio device monitor
 ```
 
-## Project Structure
+## License
 
-```
-├── src/                    # Source files
-│   ├── main.cpp           # Main application entry
-│   ├── iaq_monitor.cpp    # Main application logic
-│   ├── sensor_manager.cpp # Sensor interface
-│   ├── display_manager.cpp# Display and UI management
-│   └── power_manager.cpp  # Power management
-├── include/               # Header files
-│   ├── iaq_monitor.h
-│   ├── sensor_manager.h
-│   ├── display_manager.h
-│   └── power_manager.h
-├── lib/                   # External libraries
-├── platformio.ini         # PlatformIO configuration
-└── README.md             # Project documentation
-```
-
-## Dependencies
-
-- Arduino Core for ESP32
-- LVGL (8.3.9)
-- TFT_eSPI (2.5.31)
-- Sensirion I2C SEN66 (1.2.0)
-
-## Power Management
-
-The device includes power-saving features:
-- Deep sleep mode when battery is low
-- Configurable wake-up sources (button/timer)
-- Battery voltage monitoring
-- Display brightness control
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request 
+This project is licensed under the MIT License - see the LICENSE file for details. 
