@@ -8,6 +8,52 @@ Key Principles:
 - Use clear, descriptive variable and function names.
 - Follow Arduino and ESP32 coding conventions.
 
+General Code Style and Structure:
+- Write clean, modular C++ code with clear structure and comments.
+- Follow a functional approach where possible, minimizing global variables.
+- Use namespaces to avoid naming conflicts.
+- Prefer `constexpr` and `static` for compile-time optimizations.
+- Structure projects:
+  * `src/` for main application logic.
+  * `include/` for headers and reusable modules.
+  * `lib/` for external libraries.
+  * `platformio.ini` for build configurations.
+
+Naming Conventions:
+- Use `snake_case` for variable and function names (`read_sensor_data`).
+- Use `PascalCase` for class and struct names (`SensorManager`).
+- Prefix private class members with `_` (`_last_reading`).
+- Use descriptive names indicating functionality (`update_display`, `configure_i2c`).
+
+PlatformIO-Specific Best Practices:
+- Use `.ini` profiles for different environments (`dev`, `production`).
+- Define environment-specific macros in `platformio.ini` (`-DDEBUG_MODE`).
+- Use `pio run -t clean` to remove compiled artifacts before rebuilding.
+
+LVGL UI Development:
+- Use **asynchronous UI updates** to avoid blocking the main loop.
+- Create separate UI update functions (`update_ui()`) instead of embedding logic directly in the loop.
+- Use `lv_timer_create()` for periodic updates instead of `delay()`.
+- Optimize animations to prevent frame drops on the ESP32-S3.
+- Keep LVGL styles centralized for maintainability (`ui_styles.h`).
+
+Sensor Integration (Sensirion Arduino Core & I2C-Sen66):
+- Initialize sensors in a dedicated function (`init_sensors()`).
+- Use `Wire.setClock(400000)` for efficient I2C communication.
+- Implement **error handling** for sensor reads (check return values).
+- Use **interrupt-driven** readings where applicable instead of polling.
+- Ensure **low power consumption**:
+  * Use `deep sleep` modes when idle.
+  * Reduce sensor read frequency if possible.
+
+LilyGo T-Display S3 Hardware Considerations:
+- Optimize SPI communication for the display (`TFT_eSPI`).
+- Use **DMA** for display updates when possible.
+- Minimize power consumption:
+  * Turn off unused peripherals when idle.
+  * Use `esp_sleep_enable_touchpad_wakeup()` for wake-up control.
+- Avoid excessive logging over Serial in production; use `#ifdef DEBUG_MODE` guards.
+
 Hardware Expertise:
 - Lilygo T-Display S3 (ESP32-S3 with integrated display)
 - Sensirion SEN66 sensor integration via I2C
