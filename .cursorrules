@@ -39,7 +39,7 @@ LVGL UI Development:
 
 Sensor Integration (Sensirion Arduino Core & I2C-Sen66):
 - Initialize sensors in a dedicated function (`init_sensors()`).
-- Use `Wire.setClock(400000)` for efficient I2C communication.
+- Use `Wire.setClock(100000)` for efficient I2C communication.
 - Implement **error handling** for sensor reads (check return values).
 - Use **interrupt-driven** readings where applicable instead of polling.
 - Ensure **low power consumption**:

@@ -1,26 +1,14 @@
 #include "sensor_manager.h"
+#include "task_hierarchy.h"
+#include "task_utils.h"
 
+// Global variables
 SensorManager sensorManager;
+TaskHandle_t xSerialLogTaskHandle = nullptr;
 
-void setup() {
-    Serial.begin(115200);
-    
-    // Wait for serial to be ready
-    while (!Serial) delay(100);
-    Serial.println("SEN66 Sensor Test Starting...");
-
-    if (!sensorManager.begin()) {
-        Serial.println("Failed to initialize sensor!");
-        while (1) delay(100);
-    }
-    
-    Serial.println("Sensor initialized successfully!");
-    Serial.println("Starting measurements...");
-    Serial.println("----------------------------------------");
-}
-
-void loop() {
-    if (sensorManager.update()) {
+// Serial logging task function
+void serialLoggingTask(void* parameter) {
+    while (true) {
         const SensorData& data = sensorManager.getData();
         
         // Print processed sensor readings
@@ -57,7 +45,45 @@ void loop() {
         Serial.print("  NOx: "); Serial.print(data.rawNOx); Serial.println(" (raw ticks)");
         Serial.print("  CO2: "); Serial.print(data.rawCO2); Serial.println(" (not interpolated [ppm])");
         Serial.println("----------------------------------------\n");
+        
+        // Delay for 1 second before next log
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+void setup() {
+    Serial.begin(115200);
+    
+    // Wait for serial to be ready
+    while (!Serial) delay(100);
+    Serial.println("SEN66 Sensor Test Starting...");
+
+    if (!sensorManager.begin()) {
+        Serial.println("Failed to initialize sensor!");
+        while (1) delay(100);
     }
     
-    delay(1000); // Read every second
+    Serial.println("Sensor initialized successfully!");
+    
+    // Launch serial logging task
+    if (launchTaskWithVerification(
+        serialLoggingTask,
+        SERIAL_LOG_TASK_NAME,
+        DEFAULT_STACK_SIZE,
+        nullptr,
+        TIER_III_PRIORITY,
+        &xSerialLogTaskHandle
+    ) != pdPASS) {
+        Serial.println("Failed to create serial logging task");
+        while (1) delay(100);
+    }
+    
+    Serial.println("Tasks initialized successfully!");
+    Serial.println("Starting measurements...");
+    Serial.println("----------------------------------------");
+}
+
+void loop() {
+    // Do nothing, all operations being taken care of by tasks
+    vTaskSuspend(NULL);  // Suspend the main loop task
 } 

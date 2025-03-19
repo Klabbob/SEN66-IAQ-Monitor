@@ -1,7 +1,10 @@
 #pragma once
 
-#include <SensirionI2cSen66.h>
+#include <Arduino.h>
 #include <Wire.h>
+#include <SensirionI2cSen66.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
 struct SensorData {
     // Particle mass concentrations
@@ -36,12 +39,18 @@ public:
     bool update();
     const SensorData& getData() const { return _data; }
     
+    // FreeRTOS task function
+    static void i2cScanTask(void* parameter);
+    
 private:
     SensirionI2cSen66 _sensor;
     SensorData _data;
-    bool _isInitialized;
+    uint32_t _lastUpdate;
+    static const uint32_t UPDATE_INTERVAL = 1000; // 1 second
     
     static constexpr uint8_t SEN66_I2C_ADDR = 0x6B;
     static constexpr uint8_t I2C_SDA_PIN = 18;  // Adjust according to your wiring
     static constexpr uint8_t I2C_SCL_PIN = 17;  // Updated to match your hardware
+    // Task handle
+    static TaskHandle_t xI2CScanTaskHandle;
 }; 
