@@ -1,55 +1,13 @@
 #include "sensor_manager.h"
 #include "task_hierarchy.h"
 #include "task_utils.h"
+#include "tasks/serial_logging_task.h"
+#include "tasks/i2c_scan_task.h"
 
 // Global variables
 SensorManager sensorManager;
 TaskHandle_t xSerialLogTaskHandle = nullptr;
-
-// Serial logging task function
-void serialLoggingTask(void* parameter) {
-    while (true) {
-        const SensorData& data = sensorManager.getData();
-        
-        // Print processed sensor readings
-        Serial.println("Processed Sensor Readings:");
-        Serial.println("----------------------------------------");
-        Serial.println("Particle Mass Concentrations:");
-        Serial.print("  PM1.0: "); Serial.print(data.pm1p0); Serial.println(" μg/m³");
-        Serial.print("  PM2.5: "); Serial.print(data.pm2p5); Serial.println(" μg/m³");
-        Serial.print("  PM4.0: "); Serial.print(data.pm4p0); Serial.println(" μg/m³");
-        Serial.print("  PM10.0: "); Serial.print(data.pm10p0); Serial.println(" μg/m³");
-        
-        Serial.println("\nEnvironmental Parameters:");
-        Serial.print("  Temperature: "); Serial.print(data.temperature); Serial.println(" °C");
-        Serial.print("  Humidity: "); Serial.print(data.humidity); Serial.println(" %RH");
-        
-        Serial.println("\nAir Quality Indices:");
-        Serial.print("  VOC Index: "); Serial.print(data.vocIndex); Serial.println(" (0-500)");
-        Serial.print("  NOx Index: "); Serial.print(data.noxIndex); Serial.println(" (0-500)");
-        
-        Serial.println("\nGas Concentration:");
-        Serial.print("  CO2: "); Serial.print(data.co2); Serial.println(" ppm");
-        
-        // Print raw values
-        Serial.println("\nRaw Sensor Values:");
-        Serial.println("----------------------------------------");
-        Serial.println("Environmental Parameters (Raw):");
-        Serial.print("  Humidity: "); Serial.print(data.rawHumidity); Serial.print(" (raw) = ");
-        Serial.print(data.rawHumidity / 100.0f); Serial.println(" %RH");
-        Serial.print("  Temperature: "); Serial.print(data.rawTemperature); Serial.print(" (raw) = ");
-        Serial.print(data.rawTemperature / 200.0f); Serial.println(" °C");
-        
-        Serial.println("\nGas Sensors (Raw):");
-        Serial.print("  VOC: "); Serial.print(data.rawVOC); Serial.println(" (raw ticks)");
-        Serial.print("  NOx: "); Serial.print(data.rawNOx); Serial.println(" (raw ticks)");
-        Serial.print("  CO2: "); Serial.print(data.rawCO2); Serial.println(" (not interpolated [ppm])");
-        Serial.println("----------------------------------------\n");
-        
-        // Delay for 1 second before next log
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
+TaskHandle_t xI2CScanTaskHandle = nullptr;
 
 void setup() {
     Serial.begin(115200);
@@ -64,6 +22,19 @@ void setup() {
     }
     
     Serial.println("Sensor initialized successfully!");
+    
+    // Launch I2C scan task
+    if (launchTaskWithVerification(
+        i2cScanTask,
+        I2C_SCAN_TASK_NAME,
+        I2C_STACK_SIZE,
+        &sensorManager,
+        TIER_II_PRIORITY,
+        &xI2CScanTaskHandle
+    ) != pdPASS) {
+        Serial.println("Failed to create I2C scan task");
+        while (1) delay(100);
+    }
     
     // Launch serial logging task
     if (launchTaskWithVerification(

@@ -14,7 +14,7 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
 ## Hardware Requirements
 
-- ESP32-S3 (Lilygo T-Display S3)
+- LilyGo T-Display S3 board
 - Sensirion SEN66 sensor
 - I2C connections:
   - SDA: GPIO 18
