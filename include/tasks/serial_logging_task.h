@@ -2,10 +2,7 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include "sensor_manager.h"
-
-// External declaration of the global sensor manager
-extern SensorManager sensorManager;
+#include "tasks/i2c_scan_task.h"
 
 // Task function declaration
 void serialLoggingTask(void* parameter);

@@ -1,11 +1,10 @@
-#include "sensor_manager.h"
 #include "task_hierarchy.h"
-#include "task_utils.h"
+#include "tasks/task_utils.h"
 #include "tasks/serial_logging_task.h"
 #include "tasks/i2c_scan_task.h"
+#include "tasks/live_data_manager.h"
 
 // Global variables
-SensorManager sensorManager;
 TaskHandle_t xSerialLogTaskHandle = nullptr;
 TaskHandle_t xI2CScanTaskHandle = nullptr;
 
@@ -15,20 +14,26 @@ void setup() {
     // Wait for serial to be ready
     while (!Serial) delay(100);
     Serial.println("SEN66 Sensor Test Starting...");
-
-    if (!sensorManager.begin()) {
-        Serial.println("Failed to initialize sensor!");
+    
+    // Launch LiveDataManager task first
+    if (launchTaskWithVerification(
+        LiveDataManager::liveDataManagerTask,
+        "LiveDataManager",
+        DEFAULT_STACK_SIZE,
+        nullptr,
+        TIER_I_PRIORITY,
+        &LiveDataManager::xLiveDataManagerTaskHandle
+    ) != pdPASS) {
+        Serial.println("Failed to create LiveDataManager task");
         while (1) delay(100);
     }
-    
-    Serial.println("Sensor initialized successfully!");
     
     // Launch I2C scan task
     if (launchTaskWithVerification(
         i2cScanTask,
         I2C_SCAN_TASK_NAME,
         I2C_STACK_SIZE,
-        &sensorManager,
+        nullptr,
         TIER_II_PRIORITY,
         &xI2CScanTaskHandle
     ) != pdPASS) {
