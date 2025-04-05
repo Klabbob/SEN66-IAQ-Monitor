@@ -43,6 +43,9 @@ void DisplayTask::displayTask(void* parameter) {
             instance.update_tile_value(ui_MainScreen_TileNOx, data.noxIndex); // NOx Index
             instance.update_tile_value(ui_MainScreen_TileVOC, data.vocIndex); // VOC Index
             instance.update_tile_value(ui_MainScreen_TileCO2, data.co2);     // CO2
+            
+            // Update indicator states
+            instance.update_all_indicators(data);
         }
         
         vTaskDelay(pdMS_TO_TICKS(5));
@@ -64,6 +67,34 @@ void DisplayTask::my_disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_c
 
 void DisplayTask::update_tile_value(lv_obj_t* tile, float value) {
     char buffer[16];
+    
+    // Check for unknown values based on parameter type
+    bool is_unknown = false;
+    
+    if (tile == ui_MainScreen_TilePM) {
+        // PM2.5: Unknown if value is negative or exceeds 1000 µg/m³
+        is_unknown = (value < 0.0f || value > 6000.0f);
+    } else if (tile == ui_MainScreen_TileCO2) {
+        // CO2: Unknown if value is negative or exceeds 10000 ppm
+        is_unknown = (value < 0.0f || value > 10000.0f);
+    } else if (tile == ui_MainScreen_TileVOC) {
+        // VOC Index: Unknown if value is negative or exceeds 500
+        is_unknown = (value < 0.0f || value > 500.0f);
+    } else if (tile == ui_MainScreen_TileNOx) {
+        // NOx Index: Unknown if value is negative or exceeds 500
+        is_unknown = (value < 0.0f || value > 500.0f);
+    } else if (tile == ui_MainScreen_TileT) {
+        // Temperature: Unknown if value is outside -40°C to 85°C
+        is_unknown = (value < -40.0f || value > 85.0f);
+    } else if (tile == ui_MainScreen_TileRH) {
+        // Humidity: Unknown if value is outside 0% to 100%
+        is_unknown = (value < 0.0f || value > 100.0f);
+    }
+    
+    if (is_unknown) {
+        lv_label_set_text(ui_comp_get_child(tile, UI_COMP_TILE_VALUE), "-");
+        return;
+    }
     
     // Special formatting for different measurements
     if (tile == ui_MainScreen_TilePM && value >= 100.0f) {
@@ -107,4 +138,95 @@ void DisplayTask::init_display() {
 
     // Set initial PM2.5 value
     update_tile_value(ui_MainScreen_TilePM, 25.5f);
+}
+
+void DisplayTask::update_indicator_state(lv_obj_t* tile, IndicatorState state) {
+    // Get the indicator object from the tile using the proper component selector
+    lv_obj_t* indicator = ui_comp_get_child(tile, UI_COMP_TILE_INDICATOR);
+    
+    // Clear all states first
+    lv_obj_clear_state(indicator, LV_STATE_USER_1);
+    lv_obj_clear_state(indicator, LV_STATE_USER_2);
+    lv_obj_clear_state(indicator, LV_STATE_USER_3);
+    
+    // Set the appropriate state
+    switch (state) {
+        case IndicatorState::Green:
+            // Actively set default state
+            lv_obj_clear_state(indicator, LV_STATE_USER_1 | LV_STATE_USER_2 | LV_STATE_USER_3);
+            break;
+        case IndicatorState::Orange:
+            lv_obj_add_state(indicator, LV_STATE_USER_1);
+            break;
+        case IndicatorState::Red:
+            lv_obj_add_state(indicator, LV_STATE_USER_2);
+            break;
+        case IndicatorState::Blue:
+            lv_obj_add_state(indicator, LV_STATE_USER_3);
+            break;
+    }
+}
+
+void DisplayTask::update_all_indicators(const SensorData& data) {
+    // Temperature thresholds
+    if (data.temperature < SensorThresholds::Temperature::BLUE_MAX) {
+        update_indicator_state(ui_MainScreen_TileT, IndicatorState::Blue);
+    } else if (data.temperature <= SensorThresholds::Temperature::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TileT, IndicatorState::Green);
+    } else {
+        update_indicator_state(ui_MainScreen_TileT, IndicatorState::Red);
+    }
+
+    // Humidity thresholds
+    if (data.humidity >= SensorThresholds::Humidity::GREEN_MIN && 
+        data.humidity <= SensorThresholds::Humidity::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TileRH, IndicatorState::Green);
+    } else if ((data.humidity >= SensorThresholds::Humidity::ORANGE_MIN && 
+                data.humidity < SensorThresholds::Humidity::GREEN_MIN) || 
+               (data.humidity > SensorThresholds::Humidity::GREEN_MAX && 
+                data.humidity <= SensorThresholds::Humidity::ORANGE_MAX)) {
+        update_indicator_state(ui_MainScreen_TileRH, IndicatorState::Orange);
+    } else {
+        update_indicator_state(ui_MainScreen_TileRH, IndicatorState::Red);
+    }
+
+    // CO2 thresholds
+    if (data.co2 < SensorThresholds::CO2::BLUE_MAX) {
+        update_indicator_state(ui_MainScreen_TileCO2, IndicatorState::Blue);
+    } else if (data.co2 < SensorThresholds::CO2::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TileCO2, IndicatorState::Green);
+    } else if (data.co2 <= SensorThresholds::CO2::ORANGE_MAX) {
+        update_indicator_state(ui_MainScreen_TileCO2, IndicatorState::Orange);
+    } else {
+        update_indicator_state(ui_MainScreen_TileCO2, IndicatorState::Red);
+    }
+
+    // VOC thresholds
+    if (data.vocIndex < SensorThresholds::VOC::BLUE_MAX) {
+        update_indicator_state(ui_MainScreen_TileVOC, IndicatorState::Blue);
+    } else if (data.vocIndex <= SensorThresholds::VOC::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TileVOC, IndicatorState::Green);
+    } else if (data.vocIndex <= SensorThresholds::VOC::ORANGE_MAX) {
+        update_indicator_state(ui_MainScreen_TileVOC, IndicatorState::Orange);
+    } else {
+        update_indicator_state(ui_MainScreen_TileVOC, IndicatorState::Red);
+    }
+
+    // NOx thresholds
+    if (data.noxIndex <= SensorThresholds::NOx::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TileNOx, IndicatorState::Green);
+    } else if (data.noxIndex <= SensorThresholds::NOx::ORANGE_MAX) {
+        update_indicator_state(ui_MainScreen_TileNOx, IndicatorState::Orange);
+    } else {
+        update_indicator_state(ui_MainScreen_TileNOx, IndicatorState::Red);
+    }
+
+    // PM2.5 thresholds
+    if (data.pm2p5 < SensorThresholds::PM25::GREEN_MAX) {
+        update_indicator_state(ui_MainScreen_TilePM, IndicatorState::Green);
+    } else if (data.pm2p5 <= SensorThresholds::PM25::ORANGE_MAX) {
+        update_indicator_state(ui_MainScreen_TilePM, IndicatorState::Orange);
+    } else {
+        update_indicator_state(ui_MainScreen_TilePM, IndicatorState::Red);
+    }
 }

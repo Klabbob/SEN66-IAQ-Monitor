@@ -1,5 +1,80 @@
 #pragma once
 
+#include <cstdint>
+
+/**
+ * @struct SensorData
+ * @brief Structure containing all sensor measurements
+ */
+struct SensorData {
+    // Particle mass concentrations
+    float pm1p0;         ///< PM1.0 concentration in µg/m³
+    float pm2p5;         ///< PM2.5 concentration in µg/m³
+    float pm4p0;         ///< PM4.0 concentration in µg/m³
+    float pm10p0;        ///< PM10.0 concentration in µg/m³
+    
+    // Environmental parameters
+    float humidity;      ///< Relative humidity in %
+    float temperature;   ///< Temperature in Celsius
+    
+    // Air quality indices
+    float vocIndex;      ///< VOC index
+    float noxIndex;      ///< NOx index
+    
+    // Gas concentration
+    float co2;           ///< CO2 concentration in ppm
+    
+    // Raw values
+    int16_t rawHumidity;     ///< Scaled with factor 100: RH [%] = value / 100
+    int16_t rawTemperature;  ///< Scaled with factor 200: T [°C] = value / 200
+    uint16_t rawVOC;         ///< Raw VOC ticks without scale factor
+    uint16_t rawNOx;         ///< Raw NOx ticks without scale factor
+    uint16_t rawCO2;         ///< Not interpolated CO₂ concentration [ppm]
+};
+
+// Sensor threshold definitions
+struct SensorThresholds {
+    struct Temperature {
+        static constexpr float BLUE_MAX = 10.0f;    // < 10°C
+        static constexpr float GREEN_MAX = 30.0f;   // 10-30°C
+        // > 30°C is red
+    };
+
+    struct Humidity {
+        static constexpr float GREEN_MIN = 40.0f;   // 40-60%
+        static constexpr float GREEN_MAX = 60.0f;
+        static constexpr float ORANGE_MIN = 30.0f;  // 30-40% or 60-70%
+        static constexpr float ORANGE_MAX = 70.0f;
+        // < 30% or > 70% is red
+    };
+
+    struct CO2 {
+        static constexpr float BLUE_MAX = 550.0f;   // < 550 ppm
+        static constexpr float GREEN_MAX = 800.0f;  // 550-800 ppm
+        static constexpr float ORANGE_MAX = 1200.0f; // 800-1200 ppm
+        // > 1200 ppm is red
+    };
+
+    struct PM25 {
+        static constexpr float GREEN_MAX = 5.0f;    // < 5 µg/m³
+        static constexpr float ORANGE_MAX = 20.0f;  // 5-20 µg/m³
+        // > 20 µg/m³ is red
+    };
+
+    struct VOC {
+        static constexpr float BLUE_MAX = 85.0f;    // < 85
+        static constexpr float GREEN_MAX = 105.0f;  // 85-105
+        static constexpr float ORANGE_MAX = 110.0f; // 105-110
+        // > 110 is red
+    };
+
+    struct NOx {
+        static constexpr float GREEN_MAX = 1.0f;    // ≤ 1
+        static constexpr float ORANGE_MAX = 5.0f;   // 1-5
+        // > 5 is red
+    };
+};
+
 // SEN66
 #define OVERTEMPERATURE              6
 
