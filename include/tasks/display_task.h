@@ -5,6 +5,7 @@
 #include <ui/ui.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include "definitions.h"
 
 /**
  * @class DisplayTask
@@ -50,6 +51,14 @@ private:
     lv_disp_draw_buf_t draw_buf;
     lv_color_t display_buffer[kBufferSize];
 
+    // Indicator states
+    enum class IndicatorState {
+        Green,
+        Orange,
+        Red,
+        Blue
+    };
+
     /**
      * @brief Initialize the display hardware and LVGL
      */
@@ -69,4 +78,17 @@ private:
      * @param value The new value to display
      */
     void update_tile_value(lv_obj_t* tile, float value);
+
+    /**
+     * @brief Update a tile's indicator state
+     * @param tile The tile object to update
+     * @param state The new indicator state
+     */
+    void update_indicator_state(lv_obj_t* tile, IndicatorState state);
+
+    /**
+     * @brief Update all tile indicators based on sensor data
+     * @param data The sensor data to evaluate
+     */
+    void update_all_indicators(const SensorData& data);
 };

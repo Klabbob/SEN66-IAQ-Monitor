@@ -2,7 +2,7 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include "tasks/i2c_scan_task.h"
+#include "definitions.h"
 
 // Task function declaration
 void serialLoggingTask(void* parameter);

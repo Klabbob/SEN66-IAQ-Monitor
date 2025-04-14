@@ -1,7 +1,6 @@
 #include "tasks/i2c_scan_task.h"
 #include "tasks/live_data_manager.h"
 
-
 // Initialize sensor
 bool initSensor(SensirionI2cSen66& sensor) {
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);

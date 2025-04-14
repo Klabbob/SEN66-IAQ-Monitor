@@ -49,6 +49,8 @@ lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent)
     lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_1);
     lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_USER_2);
     lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_2);
+    lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0x002EFF), LV_PART_MAIN | LV_STATE_USER_3);
+    lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_3);
 
     lv_obj_t * cui_Polutant;
     cui_Polutant = lv_label_create(cui_Tile);

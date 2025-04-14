@@ -1,7 +1,6 @@
+#include <Arduino.h>
 #include "tasks/serial_logging_task.h"
 #include "tasks/live_data_manager.h"
-#include "tasks/i2c_scan_task.h"
-#include <Arduino.h>
 
 // Queue handle for receiving data
 static QueueHandle_t xDataQueue = nullptr;

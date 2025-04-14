@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Arduino.h>
 #include <FreeRTOS.h>
 #include <task.h>
 #include <queue.h>
-#include "tasks/i2c_scan_task.h"
+#include "definitions.h"
 
 // Configuration
 #define MAX_SUBSCRIBERS 5
