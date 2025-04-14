@@ -18,7 +18,8 @@ extern "C" {
 #define UI_COMP_TILE_INDICATOR 2
 #define UI_COMP_TILE_POLUTANT 3
 #define UI_COMP_TILE_UNIT 4
-#define _UI_COMP_TILE_NUM 5
+#define UI_COMP_TILE_SYMBOL 5
+#define _UI_COMP_TILE_NUM 6
 lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent);
 
 #ifdef __cplusplus

@@ -12,12 +12,45 @@
 void ui_MainScreen_screen_init(void);
 lv_obj_t * ui_MainScreen;
 lv_obj_t * ui_MainScreen_Container1;
+lv_obj_t * ui_MainScreen_SensirionLogo;
+lv_obj_t * ui_MainScreen_Label1;
 lv_obj_t * ui_MainScreen_TilePM;
-lv_obj_t * ui_MainScreen_TileRH;
-lv_obj_t * ui_MainScreen_TileT;
-lv_obj_t * ui_MainScreen_TileNOx;
-lv_obj_t * ui_MainScreen_TileVOC;
 lv_obj_t * ui_MainScreen_TileCO2;
+lv_obj_t * ui_MainScreen_TileVOC;
+lv_obj_t * ui_MainScreen_TileNOx;
+lv_obj_t * ui_MainScreen_TileT;
+lv_obj_t * ui_MainScreen_TileRH;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_PMScreen
+void ui_PMScreen_screen_init(void);
+lv_obj_t * ui_PMScreen;
+lv_obj_t * ui_PMScreen_Panel1;
+lv_obj_t * ui_PMScreen_PMValues;
+lv_obj_t * ui_PMScreen_PM1;
+lv_obj_t * ui_PMScreen_Pollutant;
+lv_obj_t * ui_PMScreen_Value;
+lv_obj_t * ui_PMScreen_PM25;
+lv_obj_t * ui_PMScreen_Pollutant1;
+lv_obj_t * ui_PMScreen_Value1;
+lv_obj_t * ui_PMScreen_PM4;
+lv_obj_t * ui_PMScreen_Pollutant2;
+lv_obj_t * ui_PMScreen_Value2;
+lv_obj_t * ui_PMScreen_PM10;
+lv_obj_t * ui_PMScreen_Pollutant3;
+lv_obj_t * ui_PMScreen_Value3;
+lv_obj_t * ui_PMScreen_Unit;
+lv_obj_t * ui_PMScreen_Chart1;
+lv_obj_t * ui_PMScreen_XMinValue;
+lv_obj_t * ui_PMScreen_XMaxValue;
+lv_obj_t * ui_PMScreen_YMinValue;
+lv_obj_t * ui_PMScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_Screen2
+void ui_Screen2_screen_init(void);
+lv_obj_t * ui_Screen2;
+lv_obj_t * ui_Screen2_Image12;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -48,6 +81,8 @@ void ui_init(void)
                                                true, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
     ui_MainScreen_screen_init();
+    ui_PMScreen_screen_init();
+    ui_Screen2_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_MainScreen);
 }

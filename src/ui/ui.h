@@ -31,21 +31,65 @@ extern "C" {
 void ui_MainScreen_screen_init(void);
 extern lv_obj_t * ui_MainScreen;
 extern lv_obj_t * ui_MainScreen_Container1;
+extern lv_obj_t * ui_MainScreen_SensirionLogo;
+extern lv_obj_t * ui_MainScreen_Label1;
 extern lv_obj_t * ui_MainScreen_TilePM;
-extern lv_obj_t * ui_MainScreen_TileRH;
-extern lv_obj_t * ui_MainScreen_TileT;
-extern lv_obj_t * ui_MainScreen_TileNOx;
-extern lv_obj_t * ui_MainScreen_TileVOC;
 extern lv_obj_t * ui_MainScreen_TileCO2;
+extern lv_obj_t * ui_MainScreen_TileVOC;
+extern lv_obj_t * ui_MainScreen_TileNOx;
+extern lv_obj_t * ui_MainScreen_TileT;
+extern lv_obj_t * ui_MainScreen_TileRH;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_PMScreen
+void ui_PMScreen_screen_init(void);
+extern lv_obj_t * ui_PMScreen;
+extern lv_obj_t * ui_PMScreen_Panel1;
+extern lv_obj_t * ui_PMScreen_PMValues;
+extern lv_obj_t * ui_PMScreen_PM1;
+extern lv_obj_t * ui_PMScreen_Pollutant;
+extern lv_obj_t * ui_PMScreen_Value;
+extern lv_obj_t * ui_PMScreen_PM25;
+extern lv_obj_t * ui_PMScreen_Pollutant1;
+extern lv_obj_t * ui_PMScreen_Value1;
+extern lv_obj_t * ui_PMScreen_PM4;
+extern lv_obj_t * ui_PMScreen_Pollutant2;
+extern lv_obj_t * ui_PMScreen_Value2;
+extern lv_obj_t * ui_PMScreen_PM10;
+extern lv_obj_t * ui_PMScreen_Pollutant3;
+extern lv_obj_t * ui_PMScreen_Value3;
+extern lv_obj_t * ui_PMScreen_Unit;
+extern lv_obj_t * ui_PMScreen_Chart1;
+extern lv_obj_t * ui_PMScreen_XMinValue;
+extern lv_obj_t * ui_PMScreen_XMaxValue;
+extern lv_obj_t * ui_PMScreen_YMinValue;
+extern lv_obj_t * ui_PMScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_Screen2
+void ui_Screen2_screen_init(void);
+extern lv_obj_t * ui_Screen2;
+extern lv_obj_t * ui_Screen2_Image12;
 // CUSTOM VARIABLES
 
 // EVENTS
 
 extern lv_obj_t * ui____initial_actions0;
 
+// IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_sensirion_logo_rgb_green_small_png);    // assets/Sensirion_Logo_RGB_green_small.png
+LV_IMG_DECLARE(ui_img_grip_png);    // assets/grip.png
+LV_IMG_DECLARE(ui_img_wind_png);    // assets/wind.png
+LV_IMG_DECLARE(ui_img_510121354);    // assets/flask-conical.png
+LV_IMG_DECLARE(ui_img_741524973);    // assets/flame-kindling.png
+LV_IMG_DECLARE(ui_img_thermometer_png);    // assets/thermometer.png
+LV_IMG_DECLARE(ui_img_droplets_png);    // assets/droplets.png
+LV_IMG_DECLARE(ui_img_pmscreen_png);    // assets/PMScreen.png
+
 // FONTS
 LV_FONT_DECLARE(ui_font_Arial_Black_22);
 LV_FONT_DECLARE(ui_font_Arial_Bold_13);
+LV_FONT_DECLARE(ui_font_Arial_Black_18);
 
 // UI INIT
 void ui_init(void);

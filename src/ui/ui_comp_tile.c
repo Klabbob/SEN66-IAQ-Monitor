@@ -12,10 +12,10 @@ lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_Tile;
     cui_Tile = lv_obj_create(comp_parent);
-    lv_obj_set_width(cui_Tile, 79);
-    lv_obj_set_height(cui_Tile, 85);
+    lv_obj_set_width(cui_Tile, 80);
+    lv_obj_set_height(cui_Tile, 81);
     lv_obj_set_x(cui_Tile, 4);
-    lv_obj_set_y(cui_Tile, -4);
+    lv_obj_set_y(cui_Tile, 3);
     lv_obj_set_align(cui_Tile, LV_ALIGN_BOTTOM_LEFT);
     lv_obj_clear_flag(cui_Tile, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(cui_Tile, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -27,6 +27,8 @@ lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent)
     cui_Value = lv_label_create(cui_Tile);
     lv_obj_set_width(cui_Value, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_Value, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(cui_Value, 0);
+    lv_obj_set_y(cui_Value, 4);
     lv_obj_set_align(cui_Value, LV_ALIGN_CENTER);
     lv_label_set_long_mode(cui_Value, LV_LABEL_LONG_CLIP);
     lv_label_set_text(cui_Value, "100.1");
@@ -71,12 +73,23 @@ lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent)
     lv_label_set_text(cui_Unit, "Index");
     lv_obj_set_style_text_font(cui_Unit, &ui_font_Arial_Bold_13, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_t * cui_Symbol;
+    cui_Symbol = lv_img_create(cui_Tile);
+    lv_obj_set_width(cui_Symbol, 20);
+    lv_obj_set_height(cui_Symbol, 20);
+    lv_obj_set_x(cui_Symbol, 8);
+    lv_obj_set_y(cui_Symbol, -8);
+    lv_obj_set_align(cui_Symbol, LV_ALIGN_TOP_RIGHT);
+    lv_obj_add_flag(cui_Symbol, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(cui_Symbol, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
     lv_obj_t ** children = lv_mem_alloc(sizeof(lv_obj_t *) * _UI_COMP_TILE_NUM);
     children[UI_COMP_TILE_TILE] = cui_Tile;
     children[UI_COMP_TILE_VALUE] = cui_Value;
     children[UI_COMP_TILE_INDICATOR] = cui_Indicator;
     children[UI_COMP_TILE_POLUTANT] = cui_Polutant;
     children[UI_COMP_TILE_UNIT] = cui_Unit;
+    children[UI_COMP_TILE_SYMBOL] = cui_Symbol;
     lv_obj_add_event_cb(cui_Tile, get_component_child_event_cb, LV_EVENT_GET_COMP_CHILD, children);
     lv_obj_add_event_cb(cui_Tile, del_component_child_event_cb, LV_EVENT_DELETE, children);
     ui_comp_Tile_create_hook(cui_Tile);

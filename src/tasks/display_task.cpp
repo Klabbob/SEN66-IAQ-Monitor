@@ -28,10 +28,7 @@ void DisplayTask::displayTask(void* parameter) {
     }
     
     QueueMessage message;
-    while (true) {
-        // Handle LVGL tasks
-        lv_task_handler();
-        
+    while (true) {        
         // Check for new sensor data
         if (xQueueReceive(xDataQueue, &message, pdMS_TO_TICKS(QUEUE_TIMEOUT_MS)) == pdTRUE) {
             const SensorData& data = message.data;
@@ -47,6 +44,9 @@ void DisplayTask::displayTask(void* parameter) {
             // Update indicator states
             instance.update_all_indicators(data);
         }
+
+        // Handle LVGL tasks
+        lv_task_handler();
         
         vTaskDelay(pdMS_TO_TICKS(5));
     }
@@ -135,9 +135,6 @@ void DisplayTask::init_display() {
 
     // Initialize UI
     ui_init();
-
-    // Set initial PM2.5 value
-    update_tile_value(ui_MainScreen_TilePM, 25.5f);
 }
 
 void DisplayTask::update_indicator_state(lv_obj_t* tile, IndicatorState state) {

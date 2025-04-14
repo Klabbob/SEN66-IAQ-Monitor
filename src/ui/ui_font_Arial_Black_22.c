@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 22 px
  * Bpp: 8
- * Opts: --bpp 8 --size 22 --font C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets/ARIBLK.TTF -o C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets\ui_font_Arial_Black_22.c --format lvgl -r 0x20-0x7f --no-compress --no-prefilter
+ * Opts: --bpp 8 --size 22 --font C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets/ARIBLK.TTF -o C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets\ui_font_Arial_Black_22.c --format lvgl -r 0x20-0x7f --symbols ° --no-compress --no-prefilter
  ******************************************************************************/
 
 #include "ui.h"
@@ -2468,7 +2468,16 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0xff, 0xff, 0xff, 0x64, 0xf0, 0xb8, 0x35, 0xc,
     0x46, 0xc3, 0xff, 0xff, 0xff, 0xff, 0xff, 0xcc,
     0x18, 0x7f, 0x1, 0x0, 0x0, 0x0, 0x0, 0x4d,
-    0xbf, 0xf2, 0xe5, 0x84, 0x8, 0x0
+    0xbf, 0xf2, 0xe5, 0x84, 0x8, 0x0,
+
+    /* U+00B0 "°" */
+    0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0,
+    0x5c, 0xdd, 0xf9, 0xc4, 0x2f, 0x0, 0x45, 0xff,
+    0xff, 0xff, 0xff, 0xe8, 0x12, 0xa0, 0xff, 0x7d,
+    0xf, 0xc3, 0xff, 0x57, 0x9f, 0xff, 0x88, 0x1f,
+    0xc9, 0xff, 0x56, 0x41, 0xfe, 0xff, 0xff, 0xff,
+    0xe5, 0x10, 0x0, 0x55, 0xd6, 0xf3, 0xbc, 0x2a,
+    0x0
 };
 
 
@@ -2572,7 +2581,8 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 17463, .adv_w = 137, .box_w = 9, .box_h = 20, .ofs_x = 0, .ofs_y = -4},
     {.bitmap_index = 17643, .adv_w = 98, .box_w = 4, .box_h = 20, .ofs_x = 1, .ofs_y = -4},
     {.bitmap_index = 17723, .adv_w = 137, .box_w = 9, .box_h = 20, .ofs_x = 0, .ofs_y = -4},
-    {.bitmap_index = 17903, .adv_w = 232, .box_w = 13, .box_h = 6, .ofs_x = 1, .ofs_y = 5}
+    {.bitmap_index = 17903, .adv_w = 232, .box_w = 13, .box_h = 6, .ofs_x = 1, .ofs_y = 5},
+    {.bitmap_index = 17981, .adv_w = 141, .box_w = 7, .box_h = 7, .ofs_x = 1, .ofs_y = 10}
 };
 
 /*---------------------
@@ -2586,6 +2596,10 @@ static const lv_font_fmt_txt_cmap_t cmaps[] =
 {
     {
         .range_start = 32, .range_length = 95, .glyph_id_start = 1,
+        .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
+    },
+    {
+        .range_start = 176, .range_length = 1, .glyph_id_start = 96,
         .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
     }
 };
@@ -2939,7 +2953,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .cmaps = cmaps,
     .kern_dsc = &kern_pairs,
     .kern_scale = 16,
-    .cmap_num = 1,
+    .cmap_num = 2,
     .bpp = 8,
     .kern_classes = 0,
     .bitmap_format = 0,

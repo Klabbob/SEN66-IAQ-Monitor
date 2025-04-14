@@ -50,28 +50,28 @@ struct SensorThresholds {
 
     struct CO2 {
         static constexpr float BLUE_MAX = 550.0f;   // < 550 ppm
-        static constexpr float GREEN_MAX = 800.0f;  // 550-800 ppm
-        static constexpr float ORANGE_MAX = 1200.0f; // 800-1200 ppm
-        // > 1200 ppm is red
+        static constexpr float GREEN_MAX = 1000.0f;  // 550-1000 ppm
+        static constexpr float ORANGE_MAX = 1600.0f; // 1000-1600 ppm
+        // > 1600 ppm is red
     };
 
     struct PM25 {
         static constexpr float GREEN_MAX = 5.0f;    // < 5 µg/m³
-        static constexpr float ORANGE_MAX = 20.0f;  // 5-20 µg/m³
-        // > 20 µg/m³ is red
+        static constexpr float ORANGE_MAX = 35.0f;  // 5-35 µg/m³
+        // > 35 µg/m³ is red
     };
 
     struct VOC {
         static constexpr float BLUE_MAX = 85.0f;    // < 85
-        static constexpr float GREEN_MAX = 105.0f;  // 85-105
-        static constexpr float ORANGE_MAX = 110.0f; // 105-110
-        // > 110 is red
+        static constexpr float GREEN_MAX = 150.0f;  // 85-150
+        static constexpr float ORANGE_MAX = 350.0f; // 150-350
+        // > 350 is red
     };
 
     struct NOx {
-        static constexpr float GREEN_MAX = 1.0f;    // ≤ 1
-        static constexpr float ORANGE_MAX = 5.0f;   // 1-5
-        // > 5 is red
+        static constexpr float GREEN_MAX = 20.0f;    // ≤ 20
+        static constexpr float ORANGE_MAX = 250.0f;   // 20-50
+        // > 50 is red
     };
 };
 

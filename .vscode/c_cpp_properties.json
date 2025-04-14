@@ -8,6 +8,7 @@
         {
             "name": "PlatformIO",
             "includePath": [
+                "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/TFT_eSPI",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/LittleFS/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
@@ -238,7 +239,6 @@
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                 ""
@@ -246,6 +246,7 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
+                    "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/TFT_eSPI",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/LittleFS/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
@@ -476,7 +477,6 @@
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                    "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                     ""

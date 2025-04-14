@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 13 px
  * Bpp: 8
- * Opts: --bpp 8 --size 13 --font C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets/ARIALBD.TTF -o C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets\ui_font_Arial_Bold_13.c --format lvgl -r 0x20-0x7f --no-compress --no-prefilter
+ * Opts: --bpp 8 --size 13 --font C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets/ARIALBD.TTF -o C:/Users/dcarm/Documents/Sensirion/IAQ Monitor UI Source/assets\ui_font_Arial_Bold_13.c --format lvgl -r 0x20-0x7f --symbols °µ --no-compress --no-prefilter
  ******************************************************************************/
 
 #include "ui.h"
@@ -959,7 +959,24 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0x3, 0x6d, 0x9c, 0x64, 0xa, 0x0, 0x25, 0x1a,
     0x82, 0xff, 0xff, 0xff, 0xef, 0xbd, 0xf6, 0x2c,
     0x6a, 0x2e, 0x12, 0x69, 0xd8, 0xf4, 0x8d, 0x4,
-    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+
+    /* U+00B0 "°" */
+    0x1, 0x91, 0xe3, 0xa7, 0xa, 0x51, 0xd1, 0x2f,
+    0xb9, 0x74, 0x5e, 0xc0, 0x5, 0xa1, 0x82, 0x9,
+    0xc1, 0xfd, 0xd6, 0x18, 0x0, 0x0, 0x13, 0x1,
+    0x0,
+
+    /* U+00B5 "µ" */
+    0x4c, 0xff, 0x78, 0x0, 0x0, 0xf8, 0xd8, 0x4c,
+    0xff, 0x78, 0x0, 0x0, 0xf8, 0xd8, 0x4c, 0xff,
+    0x78, 0x0, 0x0, 0xf8, 0xd8, 0x4c, 0xff, 0x7c,
+    0x0, 0x0, 0xfb, 0xd8, 0x4c, 0xff, 0x99, 0x0,
+    0x13, 0xff, 0xd8, 0x4c, 0xff, 0xf2, 0x65, 0xb3,
+    0xff, 0xd8, 0x4c, 0xff, 0xbc, 0xe9, 0xc4, 0xe0,
+    0xd8, 0x4c, 0xff, 0x78, 0x0, 0x0, 0x0, 0x0,
+    0x4c, 0xff, 0x78, 0x0, 0x0, 0x0, 0x0, 0x4c,
+    0xff, 0x78, 0x0, 0x0, 0x0, 0x0
 };
 
 
@@ -1063,14 +1080,18 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 5561, .adv_w = 81, .box_w = 5, .box_h = 12, .ofs_x = 0, .ofs_y = -3},
     {.bitmap_index = 5621, .adv_w = 58, .box_w = 2, .box_h = 12, .ofs_x = 1, .ofs_y = -3},
     {.bitmap_index = 5645, .adv_w = 81, .box_w = 5, .box_h = 12, .ofs_x = 0, .ofs_y = -3},
-    {.bitmap_index = 5705, .adv_w = 121, .box_w = 8, .box_h = 4, .ofs_x = 0, .ofs_y = 2}
+    {.bitmap_index = 5705, .adv_w = 121, .box_w = 8, .box_h = 4, .ofs_x = 0, .ofs_y = 2},
+    {.bitmap_index = 5737, .adv_w = 83, .box_w = 5, .box_h = 5, .ofs_x = 0, .ofs_y = 5},
+    {.bitmap_index = 5762, .adv_w = 120, .box_w = 7, .box_h = 10, .ofs_x = 0, .ofs_y = -3}
 };
 
 /*---------------------
  *  CHARACTER MAPPING
  *--------------------*/
 
-
+static const uint16_t unicode_list_1[] = {
+    0x0, 0x5
+};
 
 /*Collect the unicode lists and glyph_id offsets*/
 static const lv_font_fmt_txt_cmap_t cmaps[] =
@@ -1078,6 +1099,10 @@ static const lv_font_fmt_txt_cmap_t cmaps[] =
     {
         .range_start = 32, .range_length = 95, .glyph_id_start = 1,
         .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
+    },
+    {
+        .range_start = 176, .range_length = 6, .glyph_id_start = 96,
+        .unicode_list = unicode_list_1, .glyph_id_ofs_list = NULL, .list_length = 2, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
     }
 };
 
@@ -1102,7 +1127,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .cmaps = cmaps,
     .kern_dsc = NULL,
     .kern_scale = 0,
-    .cmap_num = 1,
+    .cmap_num = 2,
     .bpp = 8,
     .kern_classes = 0,
     .bitmap_format = 0,
