@@ -44,15 +44,23 @@ lv_obj_t * ui_Tile_create(lv_obj_t * comp_parent)
     lv_obj_clear_flag(cui_Indicator, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_CLICK_FOCUSABLE |
                       LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(cui_Indicator, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0x20C65A), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+                                           _ui_theme_color_Green);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
+                                           _ui_theme_alpha_Green);
     lv_obj_set_style_border_width(cui_Indicator, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0xFF7700), LV_PART_MAIN | LV_STATE_USER_1);
-    lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_1);
-    lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_USER_2);
-    lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_2);
-    lv_obj_set_style_bg_color(cui_Indicator, lv_color_hex(0x002EFF), LV_PART_MAIN | LV_STATE_USER_3);
-    lv_obj_set_style_bg_opa(cui_Indicator, 255, LV_PART_MAIN | LV_STATE_USER_3);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_1, LV_STYLE_BG_COLOR,
+                                           _ui_theme_color_Orange);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_1, LV_STYLE_BG_OPA,
+                                           _ui_theme_alpha_Orange);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_2, LV_STYLE_BG_COLOR,
+                                           _ui_theme_color_Red);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_2, LV_STYLE_BG_OPA,
+                                           _ui_theme_alpha_Red);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_3, LV_STYLE_BG_COLOR,
+                                           _ui_theme_color_Blue);
+    ui_object_set_themeable_style_property(cui_Indicator, LV_PART_MAIN | LV_STATE_USER_3, LV_STYLE_BG_OPA,
+                                           _ui_theme_alpha_Blue);
 
     lv_obj_t * cui_Polutant;
     cui_Polutant = lv_label_create(cui_Tile);

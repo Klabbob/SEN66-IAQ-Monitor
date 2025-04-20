@@ -8,6 +8,7 @@
 #include "tasks/i2c_scan_task.h"
 #include "tasks/live_data_manager.h"
 #include "tasks/display_task.h"
+#include "tasks/button_handler.h"
 #include "definitions.h"
 
 // Global variables
@@ -68,18 +69,18 @@ void setup() {
         while (1) delay(100);
     }
     
-    // Launch serial logging task
-    if (launchTaskWithVerification(
-        serialLoggingTask,
-        SERIAL_LOG_TASK_NAME,
-        DEFAULT_STACK_SIZE,
-        nullptr,
-        TIER_III_PRIORITY,
-        &xSerialLogTaskHandle
-    ) != pdPASS) {
-        Serial.println("Failed to create serial logging task");
-        while (1) delay(100);
-    }
+    // // Launch serial logging task
+    // if (launchTaskWithVerification(
+    //     serialLoggingTask,
+    //     SERIAL_LOG_TASK_NAME,
+    //     DEFAULT_STACK_SIZE,
+    //     nullptr,
+    //     TIER_III_PRIORITY,
+    //     &xSerialLogTaskHandle
+    // ) != pdPASS) {
+    //     Serial.println("Failed to create serial logging task");
+    //     while (1) delay(100);
+    // }
 
     // Launch display task
     if (launchTaskWithVerification(
@@ -91,6 +92,19 @@ void setup() {
         &DisplayTask::xDisplayTaskHandle
     ) != pdPASS) {
         Serial.println("Failed to create display task");
+        while (1) delay(100);
+    }
+
+    // Launch button task
+    if (launchTaskWithVerification(
+        ButtonHandler::buttonTask,
+        "ButtonTask",
+        DEFAULT_STACK_SIZE,
+        nullptr,
+        TIER_II_PRIORITY,
+        &ButtonHandler::xButtonTaskHandle
+    ) != pdPASS) {
+        Serial.println("Failed to create button task");
         while (1) delay(100);
     }
     

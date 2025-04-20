@@ -26,6 +26,9 @@ extern "C" {
 #include "ui_comp.h"
 #include "ui_comp_hook.h"
 #include "ui_events.h"
+#include "ui_theme_manager.h"
+#include "ui_themes.h"
+
 
 // SCREEN: ui_MainScreen
 void ui_MainScreen_screen_init(void);
@@ -59,17 +62,102 @@ extern lv_obj_t * ui_PMScreen_PM10;
 extern lv_obj_t * ui_PMScreen_Pollutant3;
 extern lv_obj_t * ui_PMScreen_Value3;
 extern lv_obj_t * ui_PMScreen_Unit;
-extern lv_obj_t * ui_PMScreen_Chart1;
+extern lv_obj_t * ui_PMScreen_PMChart;
 extern lv_obj_t * ui_PMScreen_XMinValue;
 extern lv_obj_t * ui_PMScreen_XMaxValue;
 extern lv_obj_t * ui_PMScreen_YMinValue;
 extern lv_obj_t * ui_PMScreen_YMaxValue;
 // CUSTOM VARIABLES
 
-// SCREEN: ui_Screen2
-void ui_Screen2_screen_init(void);
-extern lv_obj_t * ui_Screen2;
-extern lv_obj_t * ui_Screen2_Image12;
+// SCREEN: ui_CO2Screen
+void ui_CO2Screen_screen_init(void);
+extern lv_obj_t * ui_CO2Screen;
+extern lv_obj_t * ui_CO2Screen_Panel;
+extern lv_obj_t * ui_CO2Screen_Container;
+extern lv_obj_t * ui_CO2Screen_Title;
+extern lv_obj_t * ui_CO2Screen_Symbol;
+extern lv_obj_t * ui_CO2Screen_Pollutant;
+extern lv_obj_t * ui_CO2Screen_Value;
+extern lv_obj_t * ui_CO2Screen_Unit;
+extern lv_obj_t * ui_CO2Screen_CO2Chart;
+extern lv_obj_t * ui_CO2Screen_XMinValue;
+extern lv_obj_t * ui_CO2Screen_XMaxValue;
+extern lv_obj_t * ui_CO2Screen_YMinValue;
+extern lv_obj_t * ui_CO2Screen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_VOCScreen
+void ui_VOCScreen_screen_init(void);
+extern lv_obj_t * ui_VOCScreen;
+extern lv_obj_t * ui_VOCScreen_Panel;
+extern lv_obj_t * ui_VOCScreen_Container;
+extern lv_obj_t * ui_VOCScreen_Title;
+extern lv_obj_t * ui_VOCScreen_Symbol;
+extern lv_obj_t * ui_VOCScreen_Pollutant;
+extern lv_obj_t * ui_VOCScreen_Value;
+extern lv_obj_t * ui_VOCScreen_Unit;
+extern lv_obj_t * ui_VOCScreen_VOCChart;
+extern lv_obj_t * ui_VOCScreen_XMinValue;
+extern lv_obj_t * ui_VOCScreen_XMaxValue;
+extern lv_obj_t * ui_VOCScreen_YMinValue;
+extern lv_obj_t * ui_VOCScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_NOxScreen
+void ui_NOxScreen_screen_init(void);
+extern lv_obj_t * ui_NOxScreen;
+extern lv_obj_t * ui_NOxScreen_Panel;
+extern lv_obj_t * ui_NOxScreen_Container;
+extern lv_obj_t * ui_NOxScreen_Title;
+extern lv_obj_t * ui_NOxScreen_Symbol;
+extern lv_obj_t * ui_NOxScreen_Pollutant;
+extern lv_obj_t * ui_NOxScreen_Value;
+extern lv_obj_t * ui_NOxScreen_Unit;
+extern lv_obj_t * ui_NOxScreen_NOxChart;
+extern lv_obj_t * ui_NOxScreen_XMinValue;
+extern lv_obj_t * ui_NOxScreen_XMaxValue;
+extern lv_obj_t * ui_NOxScreen_YMinValue;
+extern lv_obj_t * ui_NOxScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_TempScreen
+void ui_TempScreen_screen_init(void);
+extern lv_obj_t * ui_TempScreen;
+extern lv_obj_t * ui_TempScreen_Panel;
+extern lv_obj_t * ui_TempScreen_Container;
+extern lv_obj_t * ui_TempScreen_Title;
+extern lv_obj_t * ui_TempScreen_Symbol;
+extern lv_obj_t * ui_TempScreen_Pollutant;
+extern lv_obj_t * ui_TempScreen_Value;
+extern lv_obj_t * ui_TempScreen_Unit;
+extern lv_obj_t * ui_TempScreen_TempChart;
+extern lv_obj_t * ui_TempScreen_XMinValue;
+extern lv_obj_t * ui_TempScreen_XMaxValue;
+extern lv_obj_t * ui_TempScreen_YMinValue;
+extern lv_obj_t * ui_TempScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_RHScreen
+void ui_RHScreen_screen_init(void);
+extern lv_obj_t * ui_RHScreen;
+extern lv_obj_t * ui_RHScreen_Panel;
+extern lv_obj_t * ui_RHScreen_Container;
+extern lv_obj_t * ui_RHScreen_Title;
+extern lv_obj_t * ui_RHScreen_Symbol;
+extern lv_obj_t * ui_RHScreen_Pollutant;
+extern lv_obj_t * ui_RHScreen_Value;
+extern lv_obj_t * ui_RHScreen_Unit;
+extern lv_obj_t * ui_RHScreen_RHChart;
+extern lv_obj_t * ui_RHScreen_XMinValue;
+extern lv_obj_t * ui_RHScreen_XMaxValue;
+extern lv_obj_t * ui_RHScreen_YMinValue;
+extern lv_obj_t * ui_RHScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_FRCScreen
+void ui_FRCScreen_screen_init(void);
+extern lv_obj_t * ui_FRCScreen;
+extern lv_obj_t * ui_FRCScreen_Label2;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -84,12 +172,16 @@ LV_IMG_DECLARE(ui_img_510121354);    // assets/flask-conical.png
 LV_IMG_DECLARE(ui_img_741524973);    // assets/flame-kindling.png
 LV_IMG_DECLARE(ui_img_thermometer_png);    // assets/thermometer.png
 LV_IMG_DECLARE(ui_img_droplets_png);    // assets/droplets.png
-LV_IMG_DECLARE(ui_img_pmscreen_png);    // assets/PMScreen.png
+LV_IMG_DECLARE(ui_img_wind_white_png);    // assets/wind_white.png
+LV_IMG_DECLARE(ui_img_417669948);    // assets/flask-conical_white.png
+LV_IMG_DECLARE(ui_img_238700877);    // assets/flame-kindling_white.png
+LV_IMG_DECLARE(ui_img_thermometer_white_png);    // assets/thermometer_white.png
+LV_IMG_DECLARE(ui_img_droplets_white_png);    // assets/droplets_white.png
 
 // FONTS
+LV_FONT_DECLARE(ui_font_Arial_Black_18);
 LV_FONT_DECLARE(ui_font_Arial_Black_22);
 LV_FONT_DECLARE(ui_font_Arial_Bold_13);
-LV_FONT_DECLARE(ui_font_Arial_Black_18);
 
 // UI INIT
 void ui_init(void);

@@ -43,7 +43,7 @@ void ui_MainScreen_screen_init(void)
     lv_obj_set_align(ui_MainScreen_Label1, LV_ALIGN_CENTER);
     lv_label_set_text(ui_MainScreen_Label1, "SEN66");
     lv_obj_set_style_text_align(ui_MainScreen_Label1, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_MainScreen_Label1, &ui_font_Arial_Bold_13, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_MainScreen_Label1, &ui_font_Arial_Black_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui_MainScreen_Label1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_right(ui_MainScreen_Label1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_top(ui_MainScreen_Label1, 3, LV_PART_MAIN | LV_STATE_DEFAULT);

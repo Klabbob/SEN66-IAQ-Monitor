@@ -20,6 +20,38 @@ bool initSensor(SensirionI2cSen66& sensor) {
         #endif
         return false;
     }
+
+    // Set temperature acceleration parameters
+    error = sensor.setTemperatureAccelerationParameters(
+        static_cast<uint16_t>(K),
+        static_cast<uint16_t>(P),
+        static_cast<uint16_t>(T1),
+        static_cast<uint16_t>(T2)
+    );
+    if (error) {
+        #ifdef DEBUG_MODE
+        Serial.print("Error setting temperature acceleration parameters: ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+        #endif
+        return false;
+    }
+
+    // Set temperature offset parameters
+    error = sensor.setTemperatureOffsetParameters(
+        static_cast<int16_t>(SLOT_0_OFFSET),
+        static_cast<int16_t>(SLOT_0_SLOPE),
+        static_cast<uint16_t>(SLOT_0_TIME_CONSTANT),
+        static_cast<uint16_t>(SLOT_0_SLOT_TIME)
+    );
+    if (error) {
+        #ifdef DEBUG_MODE
+        Serial.print("Error setting temperature offset parameters: ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+        #endif
+        return false;
+    }
     
     // Start measurement
     error = sensor.startContinuousMeasurement();

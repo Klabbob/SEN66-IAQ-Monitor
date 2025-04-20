@@ -19,40 +19,24 @@ void serialLoggingTask(void* parameter) {
         if (xQueueReceive(xDataQueue, &message, pdMS_TO_TICKS(QUEUE_TIMEOUT_MS)) == pdTRUE) {
             const SensorData& data = message.data;
             
-            // Print processed sensor readings
-            Serial.println("Processed Sensor Readings:");
-            Serial.println("----------------------------------------");
-            Serial.println("Particle Mass Concentrations:");
-            Serial.print("  PM1.0: "); Serial.print(data.pm1p0); Serial.println(" μg/m³");
-            Serial.print("  PM2.5: "); Serial.print(data.pm2p5); Serial.println(" μg/m³");
-            Serial.print("  PM4.0: "); Serial.print(data.pm4p0); Serial.println(" μg/m³");
-            Serial.print("  PM10.0: "); Serial.print(data.pm10p0); Serial.println(" μg/m³");
+            // Print labels
+            Serial.println("PM1.0\tPM2.5\tPM4.0\tPM10.0\tRH\tT\tVOC\tNOx\tCO2\tRaw RH\tRaw T\tRaw VOC\tRaw NOx\tRaw CO2");
             
-            Serial.println("\nEnvironmental Parameters:");
-            Serial.print("  Temperature: "); Serial.print(data.temperature); Serial.println(" °C");
-            Serial.print("  Humidity: "); Serial.print(data.humidity); Serial.println(" %RH");
-            
-            Serial.println("\nAir Quality Indices:");
-            Serial.print("  VOC Index: "); Serial.print(data.vocIndex); Serial.println(" (0-500)");
-            Serial.print("  NOx Index: "); Serial.print(data.noxIndex); Serial.println(" (0-500)");
-            
-            Serial.println("\nGas Concentration:");
-            Serial.print("  CO2: "); Serial.print(data.co2); Serial.println(" ppm");
-            
-            // Print raw values
-            Serial.println("\nRaw Sensor Values:");
-            Serial.println("----------------------------------------");
-            Serial.println("Environmental Parameters (Raw):");
-            Serial.print("  Humidity: "); Serial.print(data.rawHumidity); Serial.print(" (raw) = ");
-            Serial.print(data.rawHumidity / 100.0f); Serial.println(" %RH");
-            Serial.print("  Temperature: "); Serial.print(data.rawTemperature); Serial.print(" (raw) = ");
-            Serial.print(data.rawTemperature / 200.0f); Serial.println(" °C");
-            
-            Serial.println("\nGas Sensors (Raw):");
-            Serial.print("  VOC: "); Serial.print(data.rawVOC); Serial.println(" (raw ticks)");
-            Serial.print("  NOx: "); Serial.print(data.rawNOx); Serial.println(" (raw ticks)");
-            Serial.print("  CO2: "); Serial.print(data.rawCO2); Serial.println(" (not interpolated [ppm])");
-            Serial.println("----------------------------------------\n");
+            // Print all values in one line
+            Serial.print(data.pm1p0); Serial.print("\t");
+            Serial.print(data.pm2p5); Serial.print("\t");
+            Serial.print(data.pm4p0); Serial.print("\t");
+            Serial.print(data.pm10p0); Serial.print("\t");
+            Serial.print(data.humidity); Serial.print("\t");
+            Serial.print(data.temperature); Serial.print("\t");
+            Serial.print((int)data.vocIndex); Serial.print("\t");
+            Serial.print((int)data.noxIndex); Serial.print("\t");
+            Serial.print((int)data.co2); Serial.print("\t");
+            Serial.print(data.rawHumidity / 100.0f); Serial.print("\t");
+            Serial.print(data.rawTemperature / 200.0f); Serial.print("\t");
+            Serial.print((int)data.rawVOC); Serial.print("\t");
+            Serial.print((int)data.rawNOx); Serial.print("\t");
+            Serial.println((int)data.rawCO2);
         }
         
         // Small delay to prevent task starvation

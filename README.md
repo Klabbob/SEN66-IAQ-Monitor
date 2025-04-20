@@ -28,6 +28,12 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 - Sensirion I2C SEN66 library (v1.2.0)
 - Sensirion Core library (v0.3.0)
 
+## Hardware Assembly
+
+- Remove the blue and yellow cable from the connector
+- cut the remaining 4 cables to a length of 110mm
+- from the leftovers cut 75mm of the black and red wire
+
 ## Installation
 
 1. Clone the repository:

@@ -9,6 +9,7 @@
             "name": "PlatformIO",
             "includePath": [
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/Button2/src",
                 "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/TFT_eSPI",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/LittleFS/src",
                 "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
@@ -247,6 +248,7 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/Button2/src",
                     "C:/Users/dcarm/Documents/Sensirion/IAQ Monitor/.pio/libdeps/lilygo-t-display-s3/TFT_eSPI",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/LittleFS/src",
                     "C:/Users/dcarm/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",

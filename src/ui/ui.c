@@ -40,17 +40,102 @@ lv_obj_t * ui_PMScreen_PM10;
 lv_obj_t * ui_PMScreen_Pollutant3;
 lv_obj_t * ui_PMScreen_Value3;
 lv_obj_t * ui_PMScreen_Unit;
-lv_obj_t * ui_PMScreen_Chart1;
+lv_obj_t * ui_PMScreen_PMChart;
 lv_obj_t * ui_PMScreen_XMinValue;
 lv_obj_t * ui_PMScreen_XMaxValue;
 lv_obj_t * ui_PMScreen_YMinValue;
 lv_obj_t * ui_PMScreen_YMaxValue;
 // CUSTOM VARIABLES
 
-// SCREEN: ui_Screen2
-void ui_Screen2_screen_init(void);
-lv_obj_t * ui_Screen2;
-lv_obj_t * ui_Screen2_Image12;
+// SCREEN: ui_CO2Screen
+void ui_CO2Screen_screen_init(void);
+lv_obj_t * ui_CO2Screen;
+lv_obj_t * ui_CO2Screen_Panel;
+lv_obj_t * ui_CO2Screen_Container;
+lv_obj_t * ui_CO2Screen_Title;
+lv_obj_t * ui_CO2Screen_Symbol;
+lv_obj_t * ui_CO2Screen_Pollutant;
+lv_obj_t * ui_CO2Screen_Value;
+lv_obj_t * ui_CO2Screen_Unit;
+lv_obj_t * ui_CO2Screen_CO2Chart;
+lv_obj_t * ui_CO2Screen_XMinValue;
+lv_obj_t * ui_CO2Screen_XMaxValue;
+lv_obj_t * ui_CO2Screen_YMinValue;
+lv_obj_t * ui_CO2Screen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_VOCScreen
+void ui_VOCScreen_screen_init(void);
+lv_obj_t * ui_VOCScreen;
+lv_obj_t * ui_VOCScreen_Panel;
+lv_obj_t * ui_VOCScreen_Container;
+lv_obj_t * ui_VOCScreen_Title;
+lv_obj_t * ui_VOCScreen_Symbol;
+lv_obj_t * ui_VOCScreen_Pollutant;
+lv_obj_t * ui_VOCScreen_Value;
+lv_obj_t * ui_VOCScreen_Unit;
+lv_obj_t * ui_VOCScreen_VOCChart;
+lv_obj_t * ui_VOCScreen_XMinValue;
+lv_obj_t * ui_VOCScreen_XMaxValue;
+lv_obj_t * ui_VOCScreen_YMinValue;
+lv_obj_t * ui_VOCScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_NOxScreen
+void ui_NOxScreen_screen_init(void);
+lv_obj_t * ui_NOxScreen;
+lv_obj_t * ui_NOxScreen_Panel;
+lv_obj_t * ui_NOxScreen_Container;
+lv_obj_t * ui_NOxScreen_Title;
+lv_obj_t * ui_NOxScreen_Symbol;
+lv_obj_t * ui_NOxScreen_Pollutant;
+lv_obj_t * ui_NOxScreen_Value;
+lv_obj_t * ui_NOxScreen_Unit;
+lv_obj_t * ui_NOxScreen_NOxChart;
+lv_obj_t * ui_NOxScreen_XMinValue;
+lv_obj_t * ui_NOxScreen_XMaxValue;
+lv_obj_t * ui_NOxScreen_YMinValue;
+lv_obj_t * ui_NOxScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_TempScreen
+void ui_TempScreen_screen_init(void);
+lv_obj_t * ui_TempScreen;
+lv_obj_t * ui_TempScreen_Panel;
+lv_obj_t * ui_TempScreen_Container;
+lv_obj_t * ui_TempScreen_Title;
+lv_obj_t * ui_TempScreen_Symbol;
+lv_obj_t * ui_TempScreen_Pollutant;
+lv_obj_t * ui_TempScreen_Value;
+lv_obj_t * ui_TempScreen_Unit;
+lv_obj_t * ui_TempScreen_TempChart;
+lv_obj_t * ui_TempScreen_XMinValue;
+lv_obj_t * ui_TempScreen_XMaxValue;
+lv_obj_t * ui_TempScreen_YMinValue;
+lv_obj_t * ui_TempScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_RHScreen
+void ui_RHScreen_screen_init(void);
+lv_obj_t * ui_RHScreen;
+lv_obj_t * ui_RHScreen_Panel;
+lv_obj_t * ui_RHScreen_Container;
+lv_obj_t * ui_RHScreen_Title;
+lv_obj_t * ui_RHScreen_Symbol;
+lv_obj_t * ui_RHScreen_Pollutant;
+lv_obj_t * ui_RHScreen_Value;
+lv_obj_t * ui_RHScreen_Unit;
+lv_obj_t * ui_RHScreen_RHChart;
+lv_obj_t * ui_RHScreen_XMinValue;
+lv_obj_t * ui_RHScreen_XMaxValue;
+lv_obj_t * ui_RHScreen_YMinValue;
+lv_obj_t * ui_RHScreen_YMaxValue;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_FRCScreen
+void ui_FRCScreen_screen_init(void);
+lv_obj_t * ui_FRCScreen;
+lv_obj_t * ui_FRCScreen_Label2;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -82,7 +167,12 @@ void ui_init(void)
     lv_disp_set_theme(dispp, theme);
     ui_MainScreen_screen_init();
     ui_PMScreen_screen_init();
-    ui_Screen2_screen_init();
+    ui_CO2Screen_screen_init();
+    ui_VOCScreen_screen_init();
+    ui_NOxScreen_screen_init();
+    ui_TempScreen_screen_init();
+    ui_RHScreen_screen_init();
+    ui_FRCScreen_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_MainScreen);
 }
