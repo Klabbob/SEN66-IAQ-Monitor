@@ -45,10 +45,10 @@ void DisplayTask::displayTask(void* parameter) {
             instance.update_ring_buffer(instance.rh_ring_buffer, data.humidity);
             
             // Update chart series with new ring buffer values
-            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm1_series, instance.pm1_ring_buffer);
-            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm2p5_series, instance.pm2p5_ring_buffer);
-            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm4_series, instance.pm4_ring_buffer);
-            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm10_series, instance.pm10_ring_buffer);
+            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm1_series, instance.pm1_ring_buffer,
+                                        instance.pm2p5_series, instance.pm2p5_ring_buffer,
+                                        instance.pm4_series, instance.pm4_ring_buffer,
+                                        instance.pm10_series, instance.pm10_ring_buffer);
             instance.update_chart_series(ui_CO2Screen_CO2Chart, instance.co2_series, instance.co2_ring_buffer);
             instance.update_chart_series(ui_VOCScreen_VOCChart, instance.voc_series, instance.voc_ring_buffer);
             instance.update_chart_series(ui_NOxScreen_NOxChart, instance.nox_series, instance.nox_ring_buffer);
@@ -64,25 +64,25 @@ void DisplayTask::displayTask(void* parameter) {
             instance.update_tile_value(ui_MainScreen_TileCO2, data.co2);     // CO2
             
             // Update PM Screen values
-            instance.update_value_text(ui_PMScreen_Value, data.pm1p0);   // PM1.0
-            instance.update_value_text(ui_PMScreen_Value1, data.pm2p5);  // PM2.5
-            instance.update_value_text(ui_PMScreen_Value2, data.pm4p0);  // PM4.0
-            instance.update_value_text(ui_PMScreen_Value3, data.pm10p0); // PM10.0
+            instance.update_value_text(ui_PMScreen_Value, data.pm1p0, PM_DECIMALS);   // PM1.0
+            instance.update_value_text(ui_PMScreen_Value1, data.pm2p5, PM_DECIMALS);  // PM2.5
+            instance.update_value_text(ui_PMScreen_Value2, data.pm4p0, PM_DECIMALS);  // PM4.0
+            instance.update_value_text(ui_PMScreen_Value3, data.pm10p0, PM_DECIMALS); // PM10.0
             
             // Update CO2 Screen value
-            instance.update_value_text(ui_CO2Screen_Value, data.co2, true);
+            instance.update_value_text(ui_CO2Screen_Value, data.co2, CO2_DECIMALS);
             
             // Update VOC Screen value
-            instance.update_value_text(ui_VOCScreen_Value, data.vocIndex, true);
+            instance.update_value_text(ui_VOCScreen_Value, data.vocIndex, VOC_DECIMALS);
             
             // Update NOx Screen value
-            instance.update_value_text(ui_NOxScreen_Value, data.noxIndex, true);
+            instance.update_value_text(ui_NOxScreen_Value, data.noxIndex, NOX_DECIMALS);
             
             // Update Temperature Screen value
-            instance.update_value_text(ui_TempScreen_Value, data.temperature);
+            instance.update_value_text(ui_TempScreen_Value, data.temperature, TEMP_DECIMALS);
             
             // Update RH Screen value
-            instance.update_value_text(ui_RHScreen_Value, data.humidity);
+            instance.update_value_text(ui_RHScreen_Value, data.humidity, RH_DECIMALS);
             
             // Update indicator states
             instance.update_all_indicators(data);
@@ -234,7 +234,8 @@ void DisplayTask::update_ring_buffer(lv_coord_t* buffer, float value) {
 
 // Helper function to calculate adaptive range for a chart
 void DisplayTask::calculate_adaptive_range(lv_obj_t* chart, lv_coord_t* buffer, 
-                                         float default_min, float default_max, float min_spread) {
+                                         float default_min, float default_max, float min_spread,
+                                         lv_coord_t* buffer2, lv_coord_t* buffer3, lv_coord_t* buffer4) {
     float min_val = 20000.0f;
     float max_val = -200.0f;
     bool has_valid_data = false;
@@ -262,13 +263,32 @@ void DisplayTask::calculate_adaptive_range(lv_obj_t* chart, lv_coord_t* buffer,
         decimals = RH_DECIMALS;
     }
 
-    // Find min and max values in the buffer
-    for (size_t i = 0; i < kRingBufferSize; i++) {
-        if (buffer[i] != LV_CHART_POINT_NONE) {
-            float val = static_cast<float>(buffer[i]);
-            min_val = std::min(min_val, val);
-            max_val = std::max(max_val, val);
-            has_valid_data = true;
+    // Find min and max values in the buffer(s)
+    if (chart == ui_PMScreen_PMChart && buffer2 && buffer3 && buffer4) {
+        // For PM chart, check all four buffers
+        for (size_t i = 0; i < kRingBufferSize; i++) {
+            if (buffer[i] != LV_CHART_POINT_NONE) {
+                float val = static_cast<float>(buffer[i]);
+                min_val = std::min(min_val, val);
+                max_val = std::max(max_val, val);
+                has_valid_data = true;
+            }
+            if (buffer4[i] != LV_CHART_POINT_NONE) {
+                float val = static_cast<float>(buffer4[i]);
+                min_val = std::min(min_val, val);
+                max_val = std::max(max_val, val);
+                has_valid_data = true;
+            }
+        }
+    } else {
+        // For other charts, use the provided buffer
+        for (size_t i = 0; i < kRingBufferSize; i++) {
+            if (buffer[i] != LV_CHART_POINT_NONE) {
+                float val = static_cast<float>(buffer[i]);
+                min_val = std::min(min_val, val);
+                max_val = std::max(max_val, val);
+                has_valid_data = true;
+            }
         }
     }
 
@@ -324,16 +344,27 @@ void DisplayTask::calculate_adaptive_range(lv_obj_t* chart, lv_coord_t* buffer,
     }
 }
 
-void DisplayTask::update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer) {
+void DisplayTask::update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer,
+                                    lv_chart_series_t* series2, lv_coord_t* buffer2,
+                                    lv_chart_series_t* series3, lv_coord_t* buffer3,
+                                    lv_chart_series_t* series4, lv_coord_t* buffer4) {
     // Update the series data
     lv_chart_set_ext_y_array(chart, series, buffer);
+    
+    // For PM chart, update all series
+    if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
+        lv_chart_set_ext_y_array(chart, series2, buffer2);
+        lv_chart_set_ext_y_array(chart, series3, buffer3);
+        lv_chart_set_ext_y_array(chart, series4, buffer4);
+    }
 
     // Update the chart range based on the buffer data
     if (chart == ui_PMScreen_PMChart) {
         calculate_adaptive_range(chart, buffer, 
                                ChartRanges::PM::DEFAULT_MIN, 
                                ChartRanges::PM::DEFAULT_MAX, 
-                               ChartRanges::PM::MIN_SPREAD);
+                               ChartRanges::PM::MIN_SPREAD,
+                               buffer2, buffer3, buffer4);
     } else if (chart == ui_CO2Screen_CO2Chart) {
         calculate_adaptive_range(chart, buffer, 
                                ChartRanges::CO2::DEFAULT_MIN, 
@@ -383,7 +414,30 @@ void DisplayTask::init_display() {
     lv_disp_drv_register(&disp_drv);
 
     // Initialize UI
+    vTaskDelay(pdMS_TO_TICKS(5)); //yield to other tasks
     ui_init();
+    vTaskDelay(pdMS_TO_TICKS(5)); //yield to other tasks
+
+    // Hide settings screen containers
+    // FRC Screen
+    lv_label_set_text(ui_FRCScreen_LabelUp, "");
+    lv_img_set_src(ui_FRCScreen_ImageUp, &ui_img_blank_png);
+    lv_label_set_text(ui_FRCScreen_LabelDown, "");
+    lv_img_set_src(ui_FRCScreen_ImageDown, &ui_img_blank_png);
+
+    // Altitude Screen
+    lv_label_set_text(ui_AltitudeScreen_LabelUp, "");
+    lv_img_set_src(ui_AltitudeScreen_ImageUp, &ui_img_blank_png);
+    lv_label_set_text(ui_AltitudeScreen_LabelDown, "");
+    lv_img_set_src(ui_AltitudeScreen_ImageDown, &ui_img_blank_png);
+
+    // Chart Time Screen
+    lv_img_set_src(ui_ChartTimeScreen_ImageUp, &ui_img_blank_png);
+    lv_img_set_src(ui_ChartTimeScreen_ImageDown, &ui_img_blank_png);
+
+    // Brightness Screen
+    lv_img_set_src(ui_BrightnessScreen_ImageUp, &ui_img_blank_png);
+    lv_img_set_src(ui_BrightnessScreen_ImageDown, &ui_img_blank_png);
 
     // Initialize ring buffers
     init_ring_buffers();
@@ -425,10 +479,10 @@ void DisplayTask::init_display() {
     rh_max_label = ui_RHScreen_YMaxValue;
 
     // Update all chart series with initial ring buffer values
-    update_chart_series(ui_PMScreen_PMChart, pm1_series, pm1_ring_buffer);
-    update_chart_series(ui_PMScreen_PMChart, pm2p5_series, pm2p5_ring_buffer);
-    update_chart_series(ui_PMScreen_PMChart, pm4_series, pm4_ring_buffer);
-    update_chart_series(ui_PMScreen_PMChart, pm10_series, pm10_ring_buffer);
+    update_chart_series(ui_PMScreen_PMChart, pm1_series, pm1_ring_buffer,
+                        pm2p5_series, pm2p5_ring_buffer,
+                        pm4_series, pm4_ring_buffer,
+                        pm10_series, pm10_ring_buffer);
     update_chart_series(ui_CO2Screen_CO2Chart, co2_series, co2_ring_buffer);
     update_chart_series(ui_VOCScreen_VOCChart, voc_series, voc_ring_buffer);
     update_chart_series(ui_NOxScreen_NOxChart, nox_series, nox_ring_buffer);
@@ -527,46 +581,53 @@ void DisplayTask::update_all_indicators(const SensorData& data) {
     }
 }
 
-void DisplayTask::nextScreen() {
-    getInstance().currentScreenIndex = (getInstance().currentScreenIndex + 1) % NUM_SCREENS;
-    getInstance().switchScreen(getInstance().currentScreenIndex);
-}
-
-void DisplayTask::previousScreen() {
-    getInstance().currentScreenIndex = (getInstance().currentScreenIndex - 1 + NUM_SCREENS) % NUM_SCREENS;
-    getInstance().switchScreen(getInstance().currentScreenIndex);
-}
-
 void DisplayTask::switchScreen(uint8_t screenIndex) {
     switch (screenIndex) {
-        case 0:
+        case 0:  // MainScreen
             lv_disp_load_scr(ui_MainScreen);
             break;
-        case 1:
+        case 1:  // PMScreen
             lv_disp_load_scr(ui_PMScreen);
             break;
-        case 2:
+        case 2:  // CO2Screen
             lv_disp_load_scr(ui_CO2Screen);
             break;
-        case 3:
+        case 3:  // VOCScreen
             lv_disp_load_scr(ui_VOCScreen);
             break;
-        case 4:
+        case 4:  // NOxScreen
             lv_disp_load_scr(ui_NOxScreen);
             break;
-        case 5:
+        case 5:  // TempScreen
             lv_disp_load_scr(ui_TempScreen);
             break;
-        case 6:
+        case 6:  // RHScreen
             lv_disp_load_scr(ui_RHScreen);
             break;
-        case 7:
+        case 7:  // SettingsScreen
+            lv_disp_load_scr(ui_SettingsScreen);
+            break;
+        case 8:  // FRCScreen
             lv_disp_load_scr(ui_FRCScreen);
+            break;
+        case 9:  // AltitudeScreen
+            lv_disp_load_scr(ui_AltitudeScreen);
+            break;
+        case 10: // ChartTimeScreen
+            lv_disp_load_scr(ui_ChartTimeScreen);
+            break;
+        case 11: // BrightnessScreen
+            lv_disp_load_scr(ui_BrightnessScreen);
+            break;
+        default:
+            // If an invalid screen index is provided, default to MainScreen
+            lv_disp_load_scr(ui_MainScreen);
+            currentState = ScreenState::MainScreen;
             break;
     }
 }
 
-void DisplayTask::update_value_text(lv_obj_t* label, float value, bool is_integer) {
+void DisplayTask::update_value_text(lv_obj_t* label, float value, uint8_t decimals) {
     char buffer[16];
     
     // Check for unknown values
@@ -603,12 +664,9 @@ void DisplayTask::update_value_text(lv_obj_t* label, float value, bool is_intege
          label == ui_PMScreen_Value2 || label == ui_PMScreen_Value3) && value >= 100.0f) {
         // PM >= 100: show as integer
         snprintf(buffer, sizeof(buffer), "%d", static_cast<int>(value));
-    } else if (is_integer) {
-        // Integer values (CO2, VOC, NOx)
-        snprintf(buffer, sizeof(buffer), "%d", static_cast<int>(value));
     } else {
-        // Default: show with one decimal place
-        snprintf(buffer, sizeof(buffer), "%.1f", value);
+        // Default: show with decimals decimal place
+        snprintf(buffer, sizeof(buffer), "%.*f", decimals, value);
     }
     
     lv_label_set_text(label, buffer);
@@ -677,5 +735,420 @@ void DisplayTask::update_value_text(lv_obj_t* label, float value, bool is_intege
         } else {
             ui_object_set_themeable_style_property(label, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR, _ui_theme_color_Red);
         }
+    }
+}
+
+void DisplayTask::handleLeftButtonPress() {
+    if (inSettingsMode) {
+        switch (currentState) {
+            case ScreenState::FRCScreen: {
+                // Read current value and decrease by 10ppm
+                const char* currentText = lv_label_get_text(ui_FRCScreen_TargetValue);
+                int currentValue = atoi(currentText);
+                if (currentValue > 0) {
+                    currentValue -= 10;
+                    lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", currentValue);
+                }
+                break;
+            }
+                
+            case ScreenState::AltitudeScreen: {
+                // Read current value and decrease by 25m
+                const char* currentText = lv_label_get_text(ui_AltitudeScreen_TargetValue);
+                int currentValue = atoi(currentText);
+                if (currentValue > 0) {
+                    currentValue -= 25;
+                    lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", currentValue);
+                }
+                break;
+            }
+                
+            case ScreenState::ChartTimeScreen:
+                // Move checkbox selection right
+                if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                }
+                break;
+                
+            case ScreenState::BrightnessScreen:
+                // Move checkbox selection right
+                if (lv_obj_has_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                }
+                break;
+                
+            default:
+                break;
+        }
+        return;
+    }
+
+    switch (currentState) {
+        case ScreenState::MainScreen:
+            currentState = ScreenState::SettingsScreen;
+            break;
+        case ScreenState::PMScreen:
+            currentState = ScreenState::MainScreen;
+            break;
+        case ScreenState::CO2Screen:
+            currentState = ScreenState::PMScreen;
+            break;
+        case ScreenState::VOCScreen:
+            currentState = ScreenState::CO2Screen;
+            break;
+        case ScreenState::NOxScreen:
+            currentState = ScreenState::VOCScreen;
+            break;
+        case ScreenState::TempScreen:
+            currentState = ScreenState::NOxScreen;
+            break;
+        case ScreenState::RHScreen:
+            currentState = ScreenState::TempScreen;
+            break;
+        case ScreenState::SettingsScreen:
+            currentState = ScreenState::RHScreen;
+            break;
+        case ScreenState::FRCScreen:
+            currentState = ScreenState::BrightnessScreen;
+            break;
+        case ScreenState::AltitudeScreen:
+            currentState = ScreenState::FRCScreen;
+            break;
+        case ScreenState::ChartTimeScreen:
+            currentState = ScreenState::AltitudeScreen;
+            break;
+        case ScreenState::BrightnessScreen:
+            currentState = ScreenState::ChartTimeScreen;
+            break;
+    }
+    switchScreen(static_cast<uint8_t>(currentState));
+}
+
+void DisplayTask::handleRightButtonPress() {
+    if (inSettingsMode) {
+        switch (currentState) {
+            case ScreenState::FRCScreen: {
+                // Read current value and increase by 10ppm
+                const char* currentText = lv_label_get_text(ui_FRCScreen_TargetValue);
+                int currentValue = atoi(currentText);
+                currentValue += 10;
+                lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", currentValue);
+                break;
+            }
+                
+            case ScreenState::AltitudeScreen: {
+                // Read current value and increase by 25m
+                const char* currentText = lv_label_get_text(ui_AltitudeScreen_TargetValue);
+                int currentValue = atoi(currentText);
+                currentValue += 25;
+                lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", currentValue);
+                break;
+            }
+                
+            case ScreenState::ChartTimeScreen:
+                // Move checkbox selection left
+                if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                }
+                break;
+                
+            case ScreenState::BrightnessScreen:
+                // Move checkbox selection left
+                if (lv_obj_has_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED)) {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                }
+                break;
+                
+            default:
+                break;
+        }
+        return;
+    }
+
+    switch (currentState) {
+        case ScreenState::MainScreen:
+            currentState = ScreenState::PMScreen;
+            break;
+        case ScreenState::PMScreen:
+            currentState = ScreenState::CO2Screen;
+            break;
+        case ScreenState::CO2Screen:
+            currentState = ScreenState::VOCScreen;
+            break;
+        case ScreenState::VOCScreen:
+            currentState = ScreenState::NOxScreen;
+            break;
+        case ScreenState::NOxScreen:
+            currentState = ScreenState::TempScreen;
+            break;
+        case ScreenState::TempScreen:
+            currentState = ScreenState::RHScreen;
+            break;
+        case ScreenState::RHScreen:
+            currentState = ScreenState::SettingsScreen;
+            break;
+        case ScreenState::SettingsScreen:
+            currentState = ScreenState::MainScreen;
+            break;
+        case ScreenState::FRCScreen:
+            currentState = ScreenState::AltitudeScreen;
+            break;
+        case ScreenState::AltitudeScreen:
+            currentState = ScreenState::ChartTimeScreen;
+            break;
+        case ScreenState::ChartTimeScreen:
+            currentState = ScreenState::BrightnessScreen;
+            break;
+        case ScreenState::BrightnessScreen:
+            currentState = ScreenState::FRCScreen;
+            break;
+    }
+    switchScreen(static_cast<uint8_t>(currentState));
+}
+
+void DisplayTask::handleLeftButtonLongPress() {
+    if (inSettingsMode) {
+        // Restore saved state before exiting settings mode
+        switch (currentState) {
+            case ScreenState::FRCScreen: {
+                // Restore saved FRC target value
+                lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", savedFRCTargetValue);
+                break;
+            }
+                
+            case ScreenState::AltitudeScreen: {
+                // Restore saved altitude value
+                lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", savedAltitudeValue);
+                break;
+            }
+                
+            case ScreenState::ChartTimeScreen: {
+                // Restore saved checkbox states
+                if (savedChartTimeShort) {
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                }
+                if (savedChartTimeMedium) {
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                }
+                if (savedChartTimeLong) {
+                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                }
+                break;
+            }
+                
+            case ScreenState::BrightnessScreen: {
+                // Restore saved checkbox states
+                if (savedBrightness100) {
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                }
+                if (savedBrightness75) {
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                }
+                if (savedBrightness50) {
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                }
+                if (savedBrightness25) {
+                    lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                } else {
+                    lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                }
+                break;
+            }
+                
+            default:
+                break;
+        }
+        
+        exitSettingsMode();
+        return;
+    }
+
+    // Only handle long press on settings-related screens
+    switch (currentState) {
+        case ScreenState::FRCScreen:
+        case ScreenState::AltitudeScreen:
+        case ScreenState::ChartTimeScreen:
+        case ScreenState::BrightnessScreen:
+            currentState = ScreenState::SettingsScreen;
+            switchScreen(static_cast<uint8_t>(currentState));
+            break;
+        default:
+            // Ignore long press on other screens
+            break;
+    }
+}
+
+void DisplayTask::handleRightButtonLongPress() {
+    if (inSettingsMode) {
+        exitSettingsMode();
+        //apply settings TODO
+        return;
+    }
+
+    switch (currentState) {
+        case ScreenState::SettingsScreen:
+            currentState = ScreenState::FRCScreen;
+            switchScreen(static_cast<uint8_t>(currentState));
+            break;
+        case ScreenState::FRCScreen:
+        case ScreenState::AltitudeScreen:
+        case ScreenState::ChartTimeScreen:
+        case ScreenState::BrightnessScreen:
+            enterSettingsMode();
+            break;
+        default:
+            // Ignore long press on other screens
+            break;
+    }
+}
+
+void DisplayTask::enterSettingsMode() {
+    inSettingsMode = true;
+    
+    switch (currentState) {
+        case ScreenState::FRCScreen: {
+            // Save current FRC target value
+            const char* currentText = lv_label_get_text(ui_FRCScreen_TargetValue);
+            savedFRCTargetValue = atoi(currentText);
+            
+            lv_img_set_src(ui_FRCScreen_ImageUp, &ui_img_816914973);  // arrow-big-up.png
+            lv_img_set_src(ui_FRCScreen_ImageDown, &ui_img_810620936);  // arrow-big-down.png
+            lv_label_set_text(ui_FRCScreen_LabelUp, "+10ppm");
+            lv_label_set_text(ui_FRCScreen_LabelDown, "-10ppm");
+            lv_label_set_text(ui_FRCScreen_LabelRight, "long press to apply FRC");
+            lv_label_set_text(ui_FRCScreen_LabelLeft, "long press to cancel");
+            break;
+        }
+            
+        case ScreenState::AltitudeScreen: {
+            // Save current altitude value
+            const char* currentText = lv_label_get_text(ui_AltitudeScreen_TargetValue);
+            savedAltitudeValue = atoi(currentText);
+            
+            lv_img_set_src(ui_AltitudeScreen_ImageUp, &ui_img_816914973);  // arrow-big-up.png
+            lv_img_set_src(ui_AltitudeScreen_ImageDown, &ui_img_810620936);  // arrow-big-down.png
+            lv_label_set_text(ui_AltitudeScreen_LabelUp, "+25m");
+            lv_label_set_text(ui_AltitudeScreen_LabelDown, "-25m");
+            lv_label_set_text(ui_AltitudeScreen_LabelRight, "long press to apply altitude");
+            lv_label_set_text(ui_AltitudeScreen_LabelLeft, "long press to cancel");
+            break;
+        }
+            
+        case ScreenState::ChartTimeScreen: {
+            // Save current checkbox states
+            savedChartTimeShort = lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+            savedChartTimeMedium = lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+            savedChartTimeLong = lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+            
+            lv_img_set_src(ui_ChartTimeScreen_ImageUp, &ui_img_816914973);  // arrow-big-up.png
+            lv_img_set_src(ui_ChartTimeScreen_ImageDown, &ui_img_810620936);  // arrow-big-down.png
+            lv_label_set_text(ui_ChartTimeScreen_LabelRight, "long press to apply setting");
+            lv_label_set_text(ui_ChartTimeScreen_LabelLeft, "long press to cancel");
+            break;
+        }
+            
+        case ScreenState::BrightnessScreen: {
+            // Save current checkbox states
+            savedBrightness100 = lv_obj_has_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+            savedBrightness75 = lv_obj_has_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+            savedBrightness50 = lv_obj_has_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+            savedBrightness25 = lv_obj_has_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+            
+            lv_img_set_src(ui_BrightnessScreen_ImageUp, &ui_img_816914973);  // arrow-big-up.png
+            lv_img_set_src(ui_BrightnessScreen_ImageDown, &ui_img_810620936);  // arrow-big-down.png
+            lv_label_set_text(ui_BrightnessScreen_LabelRight, "long press to apply setting");
+            lv_label_set_text(ui_BrightnessScreen_LabelLeft, "long press to cancel");
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+void DisplayTask::exitSettingsMode() {
+    inSettingsMode = false;
+    
+    switch (currentState) {
+        case ScreenState::FRCScreen:
+            lv_label_set_text(ui_FRCScreen_LabelUp, "");
+            lv_img_set_src(ui_FRCScreen_ImageUp, &ui_img_blank_png);
+            lv_label_set_text(ui_FRCScreen_LabelDown, "");
+            lv_img_set_src(ui_FRCScreen_ImageDown, &ui_img_blank_png);
+            lv_label_set_text(ui_FRCScreen_LabelRight, "long press to adjust value");
+            lv_label_set_text(ui_FRCScreen_LabelLeft, "long press to exit settings");
+            break;
+            
+        case ScreenState::AltitudeScreen:
+            lv_label_set_text(ui_AltitudeScreen_LabelUp, "");
+            lv_img_set_src(ui_AltitudeScreen_ImageUp, &ui_img_blank_png);
+            lv_label_set_text(ui_AltitudeScreen_LabelDown, "");
+            lv_img_set_src(ui_AltitudeScreen_ImageDown, &ui_img_blank_png);
+            lv_label_set_text(ui_AltitudeScreen_LabelRight, "long press to adjust value");
+            lv_label_set_text(ui_AltitudeScreen_LabelLeft, "long press to exit settings");
+            break;
+            
+        case ScreenState::ChartTimeScreen:
+            lv_img_set_src(ui_ChartTimeScreen_ImageUp, &ui_img_blank_png);
+            lv_img_set_src(ui_ChartTimeScreen_ImageDown, &ui_img_blank_png);
+            lv_label_set_text(ui_ChartTimeScreen_LabelRight, "long press to adjust value");
+            lv_label_set_text(ui_ChartTimeScreen_LabelLeft, "long press to exit settings");
+            break;
+            
+        case ScreenState::BrightnessScreen:
+            lv_img_set_src(ui_BrightnessScreen_ImageUp, &ui_img_blank_png);
+            lv_img_set_src(ui_BrightnessScreen_ImageDown, &ui_img_blank_png);
+            lv_label_set_text(ui_BrightnessScreen_LabelRight, "long press to adjust value");
+            lv_label_set_text(ui_BrightnessScreen_LabelLeft, "long press to exit settings");
+            break;
+            
+        default:
+            break;
     }
 }

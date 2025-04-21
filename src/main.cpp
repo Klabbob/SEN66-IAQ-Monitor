@@ -69,18 +69,18 @@ void setup() {
         while (1) delay(100);
     }
     
-    // // Launch serial logging task
-    // if (launchTaskWithVerification(
-    //     serialLoggingTask,
-    //     SERIAL_LOG_TASK_NAME,
-    //     DEFAULT_STACK_SIZE,
-    //     nullptr,
-    //     TIER_III_PRIORITY,
-    //     &xSerialLogTaskHandle
-    // ) != pdPASS) {
-    //     Serial.println("Failed to create serial logging task");
-    //     while (1) delay(100);
-    // }
+    // Launch serial logging task
+    if (launchTaskWithVerification(
+        serialLoggingTask,
+        SERIAL_LOG_TASK_NAME,
+        DEFAULT_STACK_SIZE,
+        nullptr,
+        TIER_III_PRIORITY,
+        &xSerialLogTaskHandle
+    ) != pdPASS) {
+        Serial.println("Failed to create serial logging task");
+        while (1) delay(100);
+    }
 
     // Launch display task
     if (launchTaskWithVerification(

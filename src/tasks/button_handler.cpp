@@ -13,12 +13,20 @@ ButtonHandler::ButtonHandler()
     , buttonRight(PIN_BUTTON_RIGHT) {
     
     // Configure buttons
-    buttonLeft.setPressedHandler([this](Button2& btn) { handleLeftButton(btn); });
-    buttonRight.setPressedHandler([this](Button2& btn) { handleRightButton(btn); });
+    buttonLeft.setClickHandler([this](Button2& btn) { handleLeftButton(btn); });
+    buttonRight.setClickHandler([this](Button2& btn) { handleRightButton(btn); });
+    buttonLeft.setLongClickDetectedHandler([this](Button2& btn) { handleLeftButtonLongPress(btn); });
+    buttonRight.setLongClickDetectedHandler([this](Button2& btn) { handleRightButtonLongPress(btn); });
     
-    // Set debounce time
+    // Set debounce time and long press duration
     buttonLeft.setDebounceTime(50);
     buttonRight.setDebounceTime(50);
+    buttonLeft.setLongClickTime(500);  // 500ms for long press
+    buttonRight.setLongClickTime(500);
+
+    // Set long press as not retriggerable
+    buttonLeft.setLongClickDetectedRetriggerable(false);
+    buttonRight.setLongClickDetectedRetriggerable(false);
 }
 
 void ButtonHandler::buttonTask(void* parameter) {
@@ -27,14 +35,22 @@ void ButtonHandler::buttonTask(void* parameter) {
     while (true) {
         handler.buttonLeft.loop();
         handler.buttonRight.loop();
-        vTaskDelay(pdMS_TO_TICKS(10)); // 10ms delay
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
 void ButtonHandler::handleLeftButton(Button2& btn) {
-    DisplayTask::previousScreen();
+    DisplayTask::getInstance().handleLeftButtonPress();
 }
 
 void ButtonHandler::handleRightButton(Button2& btn) {
-    DisplayTask::nextScreen();
-} 
+    DisplayTask::getInstance().handleRightButtonPress();
+}
+
+void ButtonHandler::handleLeftButtonLongPress(Button2& btn) {
+    DisplayTask::getInstance().handleLeftButtonLongPress();
+}
+
+void ButtonHandler::handleRightButtonLongPress(Button2& btn) {
+    DisplayTask::getInstance().handleRightButtonLongPress();
+}

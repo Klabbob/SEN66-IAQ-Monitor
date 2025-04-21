@@ -128,6 +128,18 @@ Gas Sensors (Raw):
 
 ## Development
 
+### UI
+The UI is built with SquareLine Studio. Due to the limitiations of the free license tier, the setting screens are designed in a separate project. The projects can be found in the SquareLine Studio UI Source folder. 
+
+It is necessary to manually assembly the two ui exports. The main screens will be directly exported to the ui folder, the setting screens to the ui_Settings folder. 
+
+1. Copy over all screen files (ui_XYZScreen.c) to ui from ui_Settings
+2. Copy over all image files (ui_img_XYZ.c) that are not already in ui
+3. Copy all unique parts of ui.c and ui.h in ui_Settings into the respective files in ui
+4. Repeat the same for the filelist.txt and CMakeLists.text files.
+
+Contgratulations, you merged both projects. If you add new screens, make sure to update display_task.h and display_task.cpp. If you add a lot of new stuff, you might need to increase LV_MEM_SIZE in lv_conf.h
+
 ### Building
 
 ```bash

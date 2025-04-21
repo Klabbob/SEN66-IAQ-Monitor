@@ -50,8 +50,8 @@
 #define CO2_DECIMALS         0  // CO2 shown as integer
 #define VOC_DECIMALS         0  // VOC Index shown as integer
 #define NOX_DECIMALS         0  // NOx Index shown as integer
-#define TEMP_DECIMALS        1  // Temperature shown with 1 decimal place
-#define RH_DECIMALS          1  // Relative Humidity shown with 1 decimal place
+#define TEMP_DECIMALS        2  // Temperature shown with 1 decimal place
+#define RH_DECIMALS          2  // Relative Humidity shown with 1 decimal place
 
 /**
  * @struct SensorData

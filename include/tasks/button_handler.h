@@ -27,4 +27,6 @@ private:
     // Button callback functions
     void handleLeftButton(Button2& btn);
     void handleRightButton(Button2& btn);
+    void handleLeftButtonLongPress(Button2& btn);
+    void handleRightButtonLongPress(Button2& btn);
 }; 

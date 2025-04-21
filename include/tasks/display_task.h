@@ -29,18 +29,14 @@ public:
      */
     static void displayTask(void* parameter);
 
-    /**
-     * @brief Switch to the next screen
-     */
-    static void nextScreen();
-
-    /**
-     * @brief Switch to the previous screen
-     */
-    static void previousScreen();
-
     // Task handle
     static TaskHandle_t xDisplayTaskHandle;
+
+    // Button handlers
+    void handleLeftButtonPress();
+    void handleRightButtonPress();
+    void handleLeftButtonLongPress();
+    void handleRightButtonLongPress();
 
 private:
     // Private constructor for singleton
@@ -50,6 +46,21 @@ private:
     // Delete copy constructor and assignment operator
     DisplayTask(const DisplayTask&) = delete;
     DisplayTask& operator=(const DisplayTask&) = delete;
+
+    // Settings mode management
+    void enterSettingsMode();
+    void exitSettingsMode();
+
+    // Settings state storage
+    int savedFRCTargetValue = 0;
+    int savedAltitudeValue = 0;
+    bool savedChartTimeShort = false;
+    bool savedChartTimeMedium = false;
+    bool savedChartTimeLong = false;
+    bool savedBrightness100 = false;
+    bool savedBrightness75 = false;
+    bool savedBrightness50 = false;
+    bool savedBrightness25 = false;
 
     // Display dimensions
     static constexpr uint16_t kScreenWidth = 170;
@@ -62,9 +73,29 @@ private:
     lv_disp_draw_buf_t draw_buf;
     lv_color_t display_buffer[kBufferSize];
 
+    // State machine states
+    enum class ScreenState {
+        MainScreen,
+        PMScreen,
+        CO2Screen,
+        VOCScreen,
+        NOxScreen,
+        TempScreen,
+        RHScreen,
+        SettingsScreen,
+        FRCScreen,
+        AltitudeScreen,
+        ChartTimeScreen,
+        BrightnessScreen
+    };
+
+    // Current state
+    ScreenState currentState = ScreenState::MainScreen;
+    bool inSettingsMode = false;
+
     // Screen management
     uint8_t currentScreenIndex = 0;
-    #define NUM_SCREENS 8  // Main, PM, CO2, VOC, NOx, Temp, RH, FRC
+    #define NUM_SCREENS 12  // Main, PM, CO2, VOC, NOx, Temp, RH, FRC, Settings, Brightness, ChartTime, Altitude
 
     // Ring buffers for IAQ parameters
     lv_coord_t pm1_ring_buffer[kRingBufferSize];
@@ -156,9 +187,9 @@ private:
      * @brief Update a label's text and color based on a value
      * @param label The label object to update
      * @param value The value to display
-     * @param is_integer Whether to display the value as an integer
+     * @param decimals The number of decimal places to display
      */
-    void update_value_text(lv_obj_t* label, float value, bool is_integer = false);
+    void update_value_text(lv_obj_t* label, float value, uint8_t decimals);
 
     /**
      * @brief Initialize all ring buffers with -1
@@ -177,8 +208,17 @@ private:
      * @param chart The chart object
      * @param series The series to update
      * @param buffer The ring buffer containing the values
+     * @param series2 Optional second series (for PM chart)
+     * @param buffer2 Optional second buffer (for PM chart)
+     * @param series3 Optional third series (for PM chart)
+     * @param buffer3 Optional third buffer (for PM chart)
+     * @param series4 Optional fourth series (for PM chart)
+     * @param buffer4 Optional fourth buffer (for PM chart)
      */
-    void update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer);
+    void update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer,
+                           lv_chart_series_t* series2 = nullptr, lv_coord_t* buffer2 = nullptr,
+                           lv_chart_series_t* series3 = nullptr, lv_coord_t* buffer3 = nullptr,
+                           lv_chart_series_t* series4 = nullptr, lv_coord_t* buffer4 = nullptr);
 
     /**
      * @brief Calculate and set adaptive range for a chart based on its data
@@ -187,7 +227,12 @@ private:
      * @param default_min Default minimum value
      * @param default_max Default maximum value
      * @param min_spread Minimum required spread between min and max values
+     * @param buffer2 Optional second buffer (for PM chart)
+     * @param buffer3 Optional third buffer (for PM chart)
+     * @param buffer4 Optional fourth buffer (for PM chart)
      */
     void calculate_adaptive_range(lv_obj_t* chart, lv_coord_t* buffer, 
-                                float default_min, float default_max, float min_spread);
+                                float default_min, float default_max, float min_spread,
+                                lv_coord_t* buffer2 = nullptr, lv_coord_t* buffer3 = nullptr,
+                                lv_coord_t* buffer4 = nullptr);
 };

@@ -7,7 +7,11 @@ ui_VOCScreen.c
 ui_NOxScreen.c
 ui_TempScreen.c
 ui_RHScreen.c
+ui_SettingsScreen.c
 ui_FRCScreen.c
+ui_AltitudeScreen.c
+ui_ChartTimeScreen.c
+ui_BrightnessScreen.c
 ui_theme_manager.cpp
 ui_themes.cpp
 ui.c
@@ -25,6 +29,12 @@ ui_img_417669948.c
 ui_img_238700877.c
 ui_img_thermometer_white_png.c
 ui_img_droplets_white_png.c
+ui_img_cog_png.c
+ui_img_718623388.c
+ui_img_816914973.c
+ui_img_810620936.c
+ui_img_1346862293.c
+ui_img_blank_png.c
 fonts/ui_font_Arial_Black_18.c
 fonts/ui_font_Arial_Black_22.c
 fonts/ui_font_Arial_Bold_13.c

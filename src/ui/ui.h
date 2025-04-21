@@ -154,10 +154,104 @@ extern lv_obj_t * ui_RHScreen_YMinValue;
 extern lv_obj_t * ui_RHScreen_YMaxValue;
 // CUSTOM VARIABLES
 
+// SCREEN: ui_SettingsScreen
+void ui_SettingsScreen_screen_init(void);
+extern lv_obj_t * ui_SettingsScreen;
+extern lv_obj_t * ui_SettingsScreen_Panel;
+extern lv_obj_t * ui_SettingsScreen_Pollutant;
+extern lv_obj_t * ui_SettingsScreen_Symbol;
+extern lv_obj_t * ui_SettingsScreen_Container;
+extern lv_obj_t * ui_SettingsScreen_Label;
+extern lv_obj_t * ui_SettingsScreen_Image;
+
 // SCREEN: ui_FRCScreen
 void ui_FRCScreen_screen_init(void);
 extern lv_obj_t * ui_FRCScreen;
-extern lv_obj_t * ui_FRCScreen_Label2;
+extern lv_obj_t * ui_FRCScreen_Container;
+extern lv_obj_t * ui_FRCScreen_ContainerUp;
+extern lv_obj_t * ui_FRCScreen_LabelUp;
+extern lv_obj_t * ui_FRCScreen_ImageUp;
+extern lv_obj_t * ui_FRCScreen_Panel;
+extern lv_obj_t * ui_FRCScreen_Title;
+extern lv_obj_t * ui_FRCScreen_TargetValue;
+extern lv_obj_t * ui_FRCScreen_Unit;
+extern lv_obj_t * ui_FRCScreen_ContainerDown;
+extern lv_obj_t * ui_FRCScreen_ImageDown;
+extern lv_obj_t * ui_FRCScreen_LabelDown;
+extern lv_obj_t * ui_FRCScreen_ContainerRight;
+extern lv_obj_t * ui_FRCScreen_LabelRight;
+extern lv_obj_t * ui_FRCScreen_ImageRight;
+extern lv_obj_t * ui_FRCScreen_ContainerLeft;
+extern lv_obj_t * ui_FRCScreen_ImageLeft;
+extern lv_obj_t * ui_FRCScreen_LabelLeft;
+extern lv_obj_t * ui_FRCScreen_PanelInfo;
+extern lv_obj_t * ui_FRCScreen_LabelInfo;
+extern lv_obj_t * ui_FRCScreen_LabelRuntime;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_AltitudeScreen
+void ui_AltitudeScreen_screen_init(void);
+extern lv_obj_t * ui_AltitudeScreen;
+extern lv_obj_t * ui_AltitudeScreen_Container;
+extern lv_obj_t * ui_AltitudeScreen_ContainerUp;
+extern lv_obj_t * ui_AltitudeScreen_LabelUp;
+extern lv_obj_t * ui_AltitudeScreen_ImageUp;
+extern lv_obj_t * ui_AltitudeScreen_Panel;
+extern lv_obj_t * ui_AltitudeScreen_Title;
+extern lv_obj_t * ui_AltitudeScreen_TargetValue;
+extern lv_obj_t * ui_AltitudeScreen_Unit;
+extern lv_obj_t * ui_AltitudeScreen_ContainerDown;
+extern lv_obj_t * ui_AltitudeScreen_ImageDown;
+extern lv_obj_t * ui_AltitudeScreen_LabelDown;
+extern lv_obj_t * ui_AltitudeScreen_ContainerRight;
+extern lv_obj_t * ui_AltitudeScreen_LabelRight;
+extern lv_obj_t * ui_AltitudeScreen_ImageRight;
+extern lv_obj_t * ui_AltitudeScreen_ContainerLeft;
+extern lv_obj_t * ui_AltitudeScreen_ImageLeft;
+extern lv_obj_t * ui_AltitudeScreen_LabelLeft;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_ChartTimeScreen
+void ui_ChartTimeScreen_screen_init(void);
+extern lv_obj_t * ui_ChartTimeScreen;
+extern lv_obj_t * ui_ChartTimeScreen_Container;
+extern lv_obj_t * ui_ChartTimeScreen_ContainerUp;
+extern lv_obj_t * ui_ChartTimeScreen_ImageUp;
+extern lv_obj_t * ui_ChartTimeScreen_Panel;
+extern lv_obj_t * ui_ChartTimeScreen_Title;
+extern lv_obj_t * ui_ChartTimeScreen_CheckboxShort;
+extern lv_obj_t * ui_ChartTimeScreen_CheckboxMedium;
+extern lv_obj_t * ui_ChartTimeScreen_CheckboxLong;
+extern lv_obj_t * ui_ChartTimeScreen_ContainerDown;
+extern lv_obj_t * ui_ChartTimeScreen_ImageDown;
+extern lv_obj_t * ui_ChartTimeScreen_ContainerRight;
+extern lv_obj_t * ui_ChartTimeScreen_LabelRight;
+extern lv_obj_t * ui_ChartTimeScreen_ImageRight;
+extern lv_obj_t * ui_ChartTimeScreen_ContainerLeft;
+extern lv_obj_t * ui_ChartTimeScreen_ImageLeft;
+extern lv_obj_t * ui_ChartTimeScreen_LabelLeft;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_BrightnessScreen
+void ui_BrightnessScreen_screen_init(void);
+extern lv_obj_t * ui_BrightnessScreen;
+extern lv_obj_t * ui_BrightnessScreen_Container;
+extern lv_obj_t * ui_BrightnessScreen_ContainerUp;
+extern lv_obj_t * ui_BrightnessScreen_ImageUp;
+extern lv_obj_t * ui_BrightnessScreen_Panel;
+extern lv_obj_t * ui_BrightnessScreen_Title;
+extern lv_obj_t * ui_BrightnessScreen_Checkbox100;
+extern lv_obj_t * ui_BrightnessScreen_Checkbox75;
+extern lv_obj_t * ui_BrightnessScreen_Checkbox50;
+extern lv_obj_t * ui_BrightnessScreen_Checkbox25;
+extern lv_obj_t * ui_BrightnessScreen_ContainerDown;
+extern lv_obj_t * ui_BrightnessScreen_ImageDown;
+extern lv_obj_t * ui_BrightnessScreen_ContainerRight;
+extern lv_obj_t * ui_BrightnessScreen_LabelRight;
+extern lv_obj_t * ui_BrightnessScreen_ImageRight;
+extern lv_obj_t * ui_BrightnessScreen_ContainerLeft;
+extern lv_obj_t * ui_BrightnessScreen_ImageLeft;
+extern lv_obj_t * ui_BrightnessScreen_LabelLeft;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -177,6 +271,12 @@ LV_IMG_DECLARE(ui_img_417669948);    // assets/flask-conical_white.png
 LV_IMG_DECLARE(ui_img_238700877);    // assets/flame-kindling_white.png
 LV_IMG_DECLARE(ui_img_thermometer_white_png);    // assets/thermometer_white.png
 LV_IMG_DECLARE(ui_img_droplets_white_png);    // assets/droplets_white.png
+LV_IMG_DECLARE(ui_img_cog_png);    // assets/cog.png
+LV_IMG_DECLARE(ui_img_718623388);    // assets/corner-right-down.png
+LV_IMG_DECLARE(ui_img_816914973);    // assets/arrow-big-up.png
+LV_IMG_DECLARE(ui_img_810620936);    // assets/arrow-big-down.png
+LV_IMG_DECLARE(ui_img_1346862293);    // assets/corner-left-down.png
+LV_IMG_DECLARE(ui_img_blank_png);    // assets/blank.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_Arial_Black_18);
