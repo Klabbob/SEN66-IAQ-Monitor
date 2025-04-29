@@ -34,26 +34,26 @@ void DisplayTask::displayTask(void* parameter) {
             const SensorData& data = message.data;
             
             // Update ring buffers with new data
-            instance.update_ring_buffer(instance.pm1_ring_buffer, data.pm1p0);
-            instance.update_ring_buffer(instance.pm2p5_ring_buffer, data.pm2p5);
-            instance.update_ring_buffer(instance.pm4_ring_buffer, data.pm4p0);
-            instance.update_ring_buffer(instance.pm10_ring_buffer, data.pm10p0);
-            instance.update_ring_buffer(instance.co2_ring_buffer, data.co2);
-            instance.update_ring_buffer(instance.voc_ring_buffer, data.vocIndex);
-            instance.update_ring_buffer(instance.nox_ring_buffer, data.noxIndex);
-            instance.update_ring_buffer(instance.temp_ring_buffer, data.temperature);
-            instance.update_ring_buffer(instance.rh_ring_buffer, data.humidity);
+            instance.updateParameterBuffer(&instance.pm1_buffers, data.pm1p0);
+            instance.updateParameterBuffer(&instance.pm2p5_buffers, data.pm2p5);
+            instance.updateParameterBuffer(&instance.pm4_buffers, data.pm4p0);
+            instance.updateParameterBuffer(&instance.pm10_buffers, data.pm10p0);
+            instance.updateParameterBuffer(&instance.co2_buffers, data.co2);
+            instance.updateParameterBuffer(&instance.voc_buffers, data.vocIndex);
+            instance.updateParameterBuffer(&instance.nox_buffers, data.noxIndex);
+            instance.updateParameterBuffer(&instance.temp_buffers, data.temperature);
+            instance.updateParameterBuffer(&instance.rh_buffers, data.humidity);
             
             // Update chart series with new ring buffer values
-            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm1_series, instance.pm1_ring_buffer,
-                                        instance.pm2p5_series, instance.pm2p5_ring_buffer,
-                                        instance.pm4_series, instance.pm4_ring_buffer,
-                                        instance.pm10_series, instance.pm10_ring_buffer);
-            instance.update_chart_series(ui_CO2Screen_CO2Chart, instance.co2_series, instance.co2_ring_buffer);
-            instance.update_chart_series(ui_VOCScreen_VOCChart, instance.voc_series, instance.voc_ring_buffer);
-            instance.update_chart_series(ui_NOxScreen_NOxChart, instance.nox_series, instance.nox_ring_buffer);
-            instance.update_chart_series(ui_TempScreen_TempChart, instance.temp_series, instance.temp_ring_buffer);
-            instance.update_chart_series(ui_RHScreen_RHChart, instance.rh_series, instance.rh_ring_buffer);
+            instance.update_chart_series(ui_PMScreen_PMChart, instance.pm1_series, &instance.pm1_buffers,
+                                        instance.pm2p5_series, &instance.pm2p5_buffers,
+                                        instance.pm4_series, &instance.pm4_buffers,
+                                        instance.pm10_series, &instance.pm10_buffers);
+            instance.update_chart_series(ui_CO2Screen_CO2Chart, instance.co2_series, &instance.co2_buffers);
+            instance.update_chart_series(ui_VOCScreen_VOCChart, instance.voc_series, &instance.voc_buffers);
+            instance.update_chart_series(ui_NOxScreen_NOxChart, instance.nox_series, &instance.nox_buffers);
+            instance.update_chart_series(ui_TempScreen_TempChart, instance.temp_series, &instance.temp_buffers);
+            instance.update_chart_series(ui_RHScreen_RHChart, instance.rh_series, &instance.rh_buffers);
             
             // Update Main Screen tiles
             instance.update_tile_value(ui_MainScreen_TilePM, data.pm2p5);    // PM2.5
@@ -173,15 +173,33 @@ void DisplayTask::configure_chart_antialiasing(lv_obj_t* chart) {
 void DisplayTask::init_ring_buffers() {
     // Initialize all ring buffers with -1
     for (size_t i = 0; i < kRingBufferSize; i++) {
-        pm1_ring_buffer[i] = LV_CHART_POINT_NONE;
-        pm2p5_ring_buffer[i] = LV_CHART_POINT_NONE;
-        pm4_ring_buffer[i] = LV_CHART_POINT_NONE;
-        pm10_ring_buffer[i] = LV_CHART_POINT_NONE;
-        co2_ring_buffer[i] = LV_CHART_POINT_NONE;
-        voc_ring_buffer[i] = LV_CHART_POINT_NONE;
-        nox_ring_buffer[i] = LV_CHART_POINT_NONE;
-        temp_ring_buffer[i] = LV_CHART_POINT_NONE;
-        rh_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm1_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm1_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm1_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm2p5_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm2p5_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm2p5_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm4_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm4_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm4_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm10_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm10_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        pm10_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        co2_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;    
+        co2_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        co2_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        voc_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        voc_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        voc_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        nox_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        nox_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        nox_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        temp_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        temp_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        temp_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        rh_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        rh_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
+        rh_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
     }
 }
 
@@ -191,45 +209,78 @@ void DisplayTask::update_ring_buffer(lv_coord_t* buffer, float value) {
         buffer[i] = buffer[i + 1];
     }
     
-    // Check for unknown values based on parameter type
-    bool is_unknown = false;
-    float scaled_value = value;
-    
-    if (buffer == pm1_ring_buffer || buffer == pm2p5_ring_buffer || 
-        buffer == pm4_ring_buffer || buffer == pm10_ring_buffer) {
-        // PM values: Unknown if value is negative or exceeds MAX
-        is_unknown = (value < SensorThresholds::PM25::MIN || value > SensorThresholds::PM25::MAX);
-        // Scale to maintain PM_DECIMALS decimal places
-        scaled_value = value * powf(10, PM_DECIMALS);
-    } else if (buffer == co2_ring_buffer) {
-        // CO2: Unknown if value is negative or exceeds MAX
-        is_unknown = (value < SensorThresholds::CO2::MIN || value > SensorThresholds::CO2::MAX);
-        // Scale to maintain CO2_DECIMALS decimal places
-        scaled_value = value * powf(10, CO2_DECIMALS);
-    } else if (buffer == voc_ring_buffer) {
-        // VOC Index: Unknown if value is negative or exceeds MAX
-        is_unknown = (value < SensorThresholds::VOC::MIN || value > SensorThresholds::VOC::MAX);
-        // Scale to maintain VOC_DECIMALS decimal places
-        scaled_value = value * powf(10, VOC_DECIMALS);
-    } else if (buffer == nox_ring_buffer) {
-        // NOx Index: Unknown if value is negative or exceeds MAX
-        is_unknown = (value < SensorThresholds::NOx::MIN || value > SensorThresholds::NOx::MAX);
-        // Scale to maintain NOX_DECIMALS decimal places
-        scaled_value = value * powf(10, NOX_DECIMALS);
-    } else if (buffer == temp_ring_buffer) {
-        // Temperature: Unknown if value is outside MIN to MAX
-        is_unknown = (value < SensorThresholds::Temperature::MIN || value > SensorThresholds::Temperature::MAX);
-        // Scale to maintain TEMP_DECIMALS decimal places
-        scaled_value = value * powf(10, TEMP_DECIMALS);
-    } else if (buffer == rh_ring_buffer) {
-        // Humidity: Unknown if value is outside MIN to MAX
-        is_unknown = (value < SensorThresholds::Humidity::MIN || value > SensorThresholds::Humidity::MAX);
-        // Scale to maintain RH_DECIMALS decimal places
-        scaled_value = value * powf(10, RH_DECIMALS);
-    }
+    float scaled_value = valid_value(buffer, value);
     
     // Add new value at the end, or LV_CHART_POINT_NONE if invalid
-    buffer[kRingBufferSize - 1] = is_unknown ? LV_CHART_POINT_NONE : static_cast<lv_coord_t>(scaled_value);
+    if (scaled_value != -1.0f){ // Valid value
+        buffer[kRingBufferSize - 1] = static_cast<lv_coord_t>(scaled_value);
+    }
+    else{ // Invalid value
+        buffer[kRingBufferSize - 1] = LV_CHART_POINT_NONE;
+    }
+}
+
+float DisplayTask::valid_value(lv_coord_t* buffer, float value){
+    // Check for unknown values based on parameter type
+    float scaled_value = value;
+    
+    if (buffer == pm1_buffers.short_term_ring_buffer || buffer == pm2p5_buffers.short_term_ring_buffer || 
+        buffer == pm4_buffers.short_term_ring_buffer || buffer == pm10_buffers.short_term_ring_buffer) {
+        // PM values: Unknown if value is negative or exceeds MAX
+        if (value < SensorThresholds::PM25::MIN || value > SensorThresholds::PM25::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain PM_DECIMALS decimal places
+            scaled_value = value * powf(10, PM_DECIMALS);
+        }
+    } else if (buffer == co2_buffers.short_term_ring_buffer) {
+        // CO2: Unknown if value is negative or exceeds MAX
+        if (value < SensorThresholds::CO2::MIN || value > SensorThresholds::CO2::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain CO2_DECIMALS decimal places
+            scaled_value = value * powf(10, CO2_DECIMALS);
+        }
+    } else if (buffer == voc_buffers.short_term_ring_buffer) {
+        // VOC Index: Unknown if value is negative or exceeds MAX
+        if (value < SensorThresholds::VOC::MIN || value > SensorThresholds::VOC::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain VOC_DECIMALS decimal places
+            scaled_value = value * powf(10, VOC_DECIMALS);
+        }
+    } else if (buffer == nox_buffers.short_term_ring_buffer) {
+        // NOx Index: Unknown if value is negative or exceeds MAX
+        if (value < SensorThresholds::NOx::MIN || value > SensorThresholds::NOx::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain NOX_DECIMALS decimal places
+            scaled_value = value * powf(10, NOX_DECIMALS);
+        }
+    } else if (buffer == temp_buffers.short_term_ring_buffer) {
+        // Temperature: Unknown if value is outside MIN to MAX
+        if (value < SensorThresholds::Temperature::MIN || value > SensorThresholds::Temperature::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain TEMP_DECIMALS decimal places
+            scaled_value = value * powf(10, TEMP_DECIMALS);
+        }
+    } else if (buffer == rh_buffers.short_term_ring_buffer) {
+        // Humidity: Unknown if value is outside MIN to MAX
+        if (value < SensorThresholds::Humidity::MIN || value > SensorThresholds::Humidity::MAX){
+            scaled_value = -1.0f;
+        }
+        else{
+            // Scale to maintain RH_DECIMALS decimal places
+            scaled_value = value * powf(10, RH_DECIMALS);
+        }
+    }
+    return scaled_value;
 }
 
 // Helper function to calculate adaptive range for a chart
@@ -344,52 +395,83 @@ void DisplayTask::calculate_adaptive_range(lv_obj_t* chart, lv_coord_t* buffer,
     }
 }
 
-void DisplayTask::update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer,
-                                    lv_chart_series_t* series2, lv_coord_t* buffer2,
-                                    lv_chart_series_t* series3, lv_coord_t* buffer3,
-                                    lv_chart_series_t* series4, lv_coord_t* buffer4) {
-    // Update the series data
-    lv_chart_set_ext_y_array(chart, series, buffer);
+void DisplayTask::update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, ParameterBuffers* buffer,
+                                    lv_chart_series_t* series2, ParameterBuffers* buffer2,
+                                    lv_chart_series_t* series3, ParameterBuffers* buffer3,
+                                    lv_chart_series_t* series4, ParameterBuffers* buffer4) {
+    // Select the appropriate buffer based on current display mode
+    lv_coord_t* active_buffer;
+    lv_coord_t* active_buffer2 = nullptr;
+    lv_coord_t* active_buffer3 = nullptr;
+    lv_coord_t* active_buffer4 = nullptr;
     
-    // For PM chart, update all series
-    if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
-        lv_chart_set_ext_y_array(chart, series2, buffer2);
-        lv_chart_set_ext_y_array(chart, series3, buffer3);
-        lv_chart_set_ext_y_array(chart, series4, buffer4);
+    switch (currentDisplayMode) {
+        case ChartDisplayMode::ShortTerm:
+            active_buffer = buffer->short_term_ring_buffer;
+            if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
+                active_buffer2 = buffer2->short_term_ring_buffer;
+                active_buffer3 = buffer3->short_term_ring_buffer;
+                active_buffer4 = buffer4->short_term_ring_buffer;
+            }
+            break;
+        case ChartDisplayMode::MidTerm:
+            active_buffer = buffer->mid_term_ring_buffer;
+            if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
+                active_buffer2 = buffer2->mid_term_ring_buffer;
+                active_buffer3 = buffer3->mid_term_ring_buffer;
+                active_buffer4 = buffer4->mid_term_ring_buffer;
+            }
+            break;
+        case ChartDisplayMode::LongTerm:
+            active_buffer = buffer->long_term_ring_buffer;
+            if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
+                active_buffer2 = buffer2->long_term_ring_buffer;
+                active_buffer3 = buffer3->long_term_ring_buffer;
+                active_buffer4 = buffer4->long_term_ring_buffer;
+            }
+            break;
     }
 
     // Update the chart range based on the buffer data
     if (chart == ui_PMScreen_PMChart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::PM::DEFAULT_MIN, 
                                ChartRanges::PM::DEFAULT_MAX, 
                                ChartRanges::PM::MIN_SPREAD,
-                               buffer2, buffer3, buffer4);
+                               active_buffer2, active_buffer3, active_buffer4);
     } else if (chart == ui_CO2Screen_CO2Chart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::CO2::DEFAULT_MIN, 
                                ChartRanges::CO2::DEFAULT_MAX, 
                                ChartRanges::CO2::MIN_SPREAD);
     } else if (chart == ui_VOCScreen_VOCChart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::VOC::DEFAULT_MIN, 
                                ChartRanges::VOC::DEFAULT_MAX, 
                                ChartRanges::VOC::MIN_SPREAD);
     } else if (chart == ui_NOxScreen_NOxChart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::NOx::DEFAULT_MIN, 
                                ChartRanges::NOx::DEFAULT_MAX, 
                                ChartRanges::NOx::MIN_SPREAD);
     } else if (chart == ui_TempScreen_TempChart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::Temperature::DEFAULT_MIN, 
                                ChartRanges::Temperature::DEFAULT_MAX, 
                                ChartRanges::Temperature::MIN_SPREAD);
     } else if (chart == ui_RHScreen_RHChart) {
-        calculate_adaptive_range(chart, buffer, 
+        calculate_adaptive_range(chart, active_buffer, 
                                ChartRanges::Humidity::DEFAULT_MIN, 
                                ChartRanges::Humidity::DEFAULT_MAX, 
                                ChartRanges::Humidity::MIN_SPREAD);
+    }
+
+    // Update the chart series with the selected buffer
+    lv_chart_set_ext_y_array(chart, series, active_buffer);
+    if (chart == ui_PMScreen_PMChart && series2 && buffer2 && series3 && buffer3 && series4 && buffer4) {
+        lv_chart_set_ext_y_array(chart, series2, active_buffer2);
+        lv_chart_set_ext_y_array(chart, series3, active_buffer3);
+        lv_chart_set_ext_y_array(chart, series4, active_buffer4);
     }
 }
 
@@ -400,6 +482,12 @@ void DisplayTask::init_display() {
     // Initialize TFT display
     tft.begin();
     tft.setRotation(0); // Portrait orientation
+
+    // Initialize LEDC PWM for backlight control
+    ledcSetup(kLEDCChannel, kLEDCFrequency, kLEDCResolution);
+    ledcAttachPin(PIN_LCD_BL, kLEDCChannel);
+    // Start with full brightness
+    ledcWrite(kLEDCChannel, 255);
 
     // Initialize display buffer
     lv_disp_draw_buf_init(&draw_buf, display_buffer, NULL, kBufferSize);
@@ -479,15 +567,22 @@ void DisplayTask::init_display() {
     rh_max_label = ui_RHScreen_YMaxValue;
 
     // Update all chart series with initial ring buffer values
-    update_chart_series(ui_PMScreen_PMChart, pm1_series, pm1_ring_buffer,
-                        pm2p5_series, pm2p5_ring_buffer,
-                        pm4_series, pm4_ring_buffer,
-                        pm10_series, pm10_ring_buffer);
-    update_chart_series(ui_CO2Screen_CO2Chart, co2_series, co2_ring_buffer);
-    update_chart_series(ui_VOCScreen_VOCChart, voc_series, voc_ring_buffer);
-    update_chart_series(ui_NOxScreen_NOxChart, nox_series, nox_ring_buffer);
-    update_chart_series(ui_TempScreen_TempChart, temp_series, temp_ring_buffer);
-    update_chart_series(ui_RHScreen_RHChart, rh_series, rh_ring_buffer);
+    update_chart_series(ui_PMScreen_PMChart, pm1_series, &pm1_buffers,
+                                pm2p5_series, &pm2p5_buffers,
+                                pm4_series, &pm4_buffers,
+                                pm10_series, &pm10_buffers);
+    update_chart_series(ui_CO2Screen_CO2Chart, co2_series, &co2_buffers);
+    update_chart_series(ui_VOCScreen_VOCChart, voc_series, &voc_buffers);
+    update_chart_series(ui_NOxScreen_NOxChart, nox_series, &nox_buffers);
+    update_chart_series(ui_TempScreen_TempChart, temp_series, &temp_buffers);
+    update_chart_series(ui_RHScreen_RHChart, rh_series, &rh_buffers);
+
+    // Set Chart Time Screen to Short Term
+    currentDisplayMode = ChartDisplayMode::ShortTerm;
+    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
 }
 
 void DisplayTask::update_indicator_state(lv_obj_t* tile, IndicatorState state) {
@@ -764,17 +859,7 @@ void DisplayTask::handleLeftButtonPress() {
             }
                 
             case ScreenState::ChartTimeScreen:
-                // Move checkbox selection right
-                if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                }
+                cycleChartDisplayMode();
                 break;
                 
             case ScreenState::BrightnessScreen:
@@ -782,15 +867,19 @@ void DisplayTask::handleLeftButtonPress() {
                 if (lv_obj_has_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                    setDisplayBrightness(191); // 75% of 255
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                    setDisplayBrightness(128); // 50% of 255
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                    setDisplayBrightness(64); // 25%
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                    setDisplayBrightness(255); // 100%
                 }
                 break;
                 
@@ -863,17 +952,7 @@ void DisplayTask::handleRightButtonPress() {
             }
                 
             case ScreenState::ChartTimeScreen:
-                // Move checkbox selection left
-                if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                } else if (lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED)) {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                }
+                cycleChartDisplayMode(true);
                 break;
                 
             case ScreenState::BrightnessScreen:
@@ -881,15 +960,19 @@ void DisplayTask::handleRightButtonPress() {
                 if (lv_obj_has_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                    setDisplayBrightness(64); // 25%
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                    setDisplayBrightness(255); // 100%
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                    setDisplayBrightness(191); // 75%
                 } else if (lv_obj_has_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED)) {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                    setDisplayBrightness(128); // 50%
                 }
                 break;
                 
@@ -957,22 +1040,7 @@ void DisplayTask::handleLeftButtonLongPress() {
             }
                 
             case ScreenState::ChartTimeScreen: {
-                // Restore saved checkbox states
-                if (savedChartTimeShort) {
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                } else {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-                }
-                if (savedChartTimeMedium) {
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                } else {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-                }
-                if (savedChartTimeLong) {
-                    lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                } else {
-                    lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
-                }
+                cycleChartDisplayMode(false, true);
                 break;
             }
                 
@@ -980,21 +1048,25 @@ void DisplayTask::handleLeftButtonLongPress() {
                 // Restore saved checkbox states
                 if (savedBrightness100) {
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
+                    setDisplayBrightness(255); // 100%
                 } else {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox100, LV_STATE_CHECKED);
                 }
                 if (savedBrightness75) {
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
+                    setDisplayBrightness(191); // 75%
                 } else {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox75, LV_STATE_CHECKED);
                 }
                 if (savedBrightness50) {
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
+                    setDisplayBrightness(128); // 50%
                 } else {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox50, LV_STATE_CHECKED);
                 }
                 if (savedBrightness25) {
                     lv_obj_add_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
+                    setDisplayBrightness(64); // 25%
                 } else {
                     lv_obj_clear_state(ui_BrightnessScreen_Checkbox25, LV_STATE_CHECKED);
                 }
@@ -1032,6 +1104,14 @@ void DisplayTask::handleRightButtonLongPress() {
     }
 
     switch (currentState) {
+        case ScreenState::PMScreen:
+        case ScreenState::CO2Screen:
+        case ScreenState::VOCScreen:
+        case ScreenState::NOxScreen:
+        case ScreenState::TempScreen:
+        case ScreenState::RHScreen:
+            cycleChartDisplayMode();
+            break;
         case ScreenState::SettingsScreen:
             currentState = ScreenState::FRCScreen;
             switchScreen(static_cast<uint8_t>(currentState));
@@ -1082,9 +1162,7 @@ void DisplayTask::enterSettingsMode() {
             
         case ScreenState::ChartTimeScreen: {
             // Save current checkbox states
-            savedChartTimeShort = lv_obj_has_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
-            savedChartTimeMedium = lv_obj_has_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
-            savedChartTimeLong = lv_obj_has_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+            savedChartDisplayMode = currentDisplayMode;
             
             lv_img_set_src(ui_ChartTimeScreen_ImageUp, &ui_img_816914973);  // arrow-big-up.png
             lv_img_set_src(ui_ChartTimeScreen_ImageDown, &ui_img_810620936);  // arrow-big-down.png
@@ -1151,4 +1229,134 @@ void DisplayTask::exitSettingsMode() {
         default:
             break;
     }
+}
+
+void DisplayTask::updateParameterBuffer(ParameterBuffers* buffers, float value) {
+    // Update short-term buffer (150 points, 1 point per second)
+    update_ring_buffer(buffers->short_term_ring_buffer, value);
+    
+    // Accumulate 24 seconds average
+    float scaled_value = valid_value(buffers->short_term_ring_buffer, value);
+    if (scaled_value != -1.0f){
+        buffers->mid_term_sum += scaled_value;
+        buffers->mid_term_count++;
+    }
+    if (buffers->mid_term_count == kMidTermBufferSize - 1) {
+        update_ring_buffer(buffers->mid_term_ring_buffer, buffers->mid_term_sum / kMidTermBufferSize);
+        // Accumulate 576 seconds average
+        buffers->long_term_sum += buffers->mid_term_sum / kMidTermBufferSize;
+        buffers->long_term_count++;
+        if (buffers->long_term_count == kLongTermBufferSize - 1) {
+            update_ring_buffer(buffers->long_term_ring_buffer, buffers->long_term_sum / kLongTermBufferSize);
+            buffers->long_term_sum = 0.0f;
+            buffers->long_term_count = 0;
+            }
+        buffers->mid_term_sum = 0.0f;
+        buffers->mid_term_count = 0;
+    }
+}
+
+void DisplayTask::cycleChartDisplayMode(bool up, bool reset) {
+    if (reset) {
+        currentDisplayMode = savedChartDisplayMode;
+        lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+        lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+        lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+
+        // Restore saved checkbox states
+        if (savedChartDisplayMode == ChartDisplayMode::ShortTerm) {
+            lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+        } else if (savedChartDisplayMode == ChartDisplayMode::MidTerm) {
+            lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+        } else if (savedChartDisplayMode == ChartDisplayMode::LongTerm) {
+            lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+        }
+
+    } else {
+        if (up) {
+            // Move checkbox selection up
+            if (currentDisplayMode == ChartDisplayMode::ShortTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::LongTerm;
+            } else if (currentDisplayMode == ChartDisplayMode::MidTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::ShortTerm;
+            } else if (currentDisplayMode == ChartDisplayMode::LongTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::MidTerm;
+            }
+        } else {
+            // Move checkbox selection down
+            if (currentDisplayMode == ChartDisplayMode::ShortTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::MidTerm;
+            } else if (currentDisplayMode == ChartDisplayMode::MidTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxMedium, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::LongTerm;
+            } else if (currentDisplayMode == ChartDisplayMode::LongTerm) {
+                lv_obj_clear_state(ui_ChartTimeScreen_CheckboxLong, LV_STATE_CHECKED);
+                lv_obj_add_state(ui_ChartTimeScreen_CheckboxShort, LV_STATE_CHECKED);
+                currentDisplayMode = ChartDisplayMode::ShortTerm;
+            }
+        }
+    }
+
+    switch (currentDisplayMode) {
+        case ChartDisplayMode::ShortTerm:
+            // Update X-axis labels for all charts to show -2min30
+            lv_label_set_text(ui_PMScreen_XMinValue, "-2min30");
+            lv_label_set_text(ui_CO2Screen_XMinValue, "-2min30");
+            lv_label_set_text(ui_VOCScreen_XMinValue, "-2min30");
+            lv_label_set_text(ui_NOxScreen_XMinValue, "-2min30");
+            lv_label_set_text(ui_TempScreen_XMinValue, "-2min30");
+            lv_label_set_text(ui_RHScreen_XMinValue, "-2min30");
+            break;
+        case ChartDisplayMode::MidTerm:
+            // Update X-axis labels for all charts to show -60min
+            lv_label_set_text(ui_PMScreen_XMinValue, "-60min");
+            lv_label_set_text(ui_CO2Screen_XMinValue, "-60min");
+            lv_label_set_text(ui_VOCScreen_XMinValue, "-60min");
+            lv_label_set_text(ui_NOxScreen_XMinValue, "-60min");
+            lv_label_set_text(ui_TempScreen_XMinValue, "-60min");
+            lv_label_set_text(ui_RHScreen_XMinValue, "-60min");
+            break;
+        case ChartDisplayMode::LongTerm:
+            // Update X-axis labels for all charts to show -24h
+            lv_label_set_text(ui_PMScreen_XMinValue, "-24h");
+            lv_label_set_text(ui_CO2Screen_XMinValue, "-24h");
+            lv_label_set_text(ui_VOCScreen_XMinValue, "-24h");
+            lv_label_set_text(ui_NOxScreen_XMinValue, "-24h");
+            lv_label_set_text(ui_TempScreen_XMinValue, "-24h");
+            lv_label_set_text(ui_RHScreen_XMinValue, "-24h");
+            break;
+    }
+    
+    // Update all chart series to reflect the new display mode
+    update_chart_series(ui_PMScreen_PMChart, pm1_series, &pm1_buffers,
+                       pm2p5_series, &pm2p5_buffers,
+                       pm4_series, &pm4_buffers,
+                       pm10_series, &pm10_buffers);
+    
+    update_chart_series(ui_CO2Screen_CO2Chart, co2_series, &co2_buffers);
+    update_chart_series(ui_VOCScreen_VOCChart, voc_series, &voc_buffers);
+    update_chart_series(ui_NOxScreen_NOxChart, nox_series, &nox_buffers);
+    update_chart_series(ui_TempScreen_TempChart, temp_series, &temp_buffers);
+    update_chart_series(ui_RHScreen_RHChart, rh_series, &rh_buffers);
+}
+
+void DisplayTask::setDisplayBrightness(uint8_t brightness) {
+    // Check current duty cycle
+    uint32_t currentDuty = ledcRead(kLEDCChannel);
+    Serial.printf("Current duty cycle: %u, Setting to: %u\n", currentDuty, brightness);
+    
+    ledcWrite(kLEDCChannel, brightness);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    
+    currentDuty = ledcRead(kLEDCChannel);
+    Serial.printf("Final PWM duty cycle: %u\n", currentDuty);
 }

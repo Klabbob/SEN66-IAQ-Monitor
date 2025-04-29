@@ -38,6 +38,12 @@ public:
     void handleLeftButtonLongPress();
     void handleRightButtonLongPress();
 
+    /**
+     * @brief Set the display brightness using PWM
+     * @param brightness Value from 0 to 255
+     */
+    void setDisplayBrightness(uint8_t brightness);
+
 private:
     // Private constructor for singleton
     DisplayTask();
@@ -51,22 +57,78 @@ private:
     void enterSettingsMode();
     void exitSettingsMode();
 
+    // Display dimensions
+    static constexpr uint16_t kScreenWidth = 170;
+    static constexpr uint16_t kScreenHeight = 320;
+    static constexpr uint16_t kBufferSize = kScreenWidth * kScreenHeight / 10;  // Full screen buffer
+    
+    // LEDC PWM configuration
+    static constexpr uint8_t kLEDCChannel = 0;        // LEDC channel 0
+    static constexpr uint8_t kLEDCResolution = 8;     // 8-bit resolution (0-255)
+    static constexpr uint32_t kLEDCFrequency = 5000;  // 5kHz PWM frequency
+    
+    // Ring buffer configuration
+    static constexpr size_t kRingBufferSize  = 150;         // Ring buffer Size
+    static constexpr size_t kMidTermBufferSize = 24;        // 24 seconds of data
+    static constexpr size_t kLongTermBufferSize = 24;      // 576 seconds of data by using kMidTermBufferSize combined with kLongTermBufferSize
+    
+    // Chart display modes
+    enum class ChartDisplayMode {
+        ShortTerm,    // 2.5 minutes of data
+        MidTerm,      // 60 minutes of data
+        LongTerm      // 24 hours of data
+    };
+    
+    ChartDisplayMode currentDisplayMode = ChartDisplayMode::ShortTerm;
+
     // Settings state storage
     int savedFRCTargetValue = 0;
     int savedAltitudeValue = 0;
-    bool savedChartTimeShort = false;
-    bool savedChartTimeMedium = false;
-    bool savedChartTimeLong = false;
+    ChartDisplayMode savedChartDisplayMode = ChartDisplayMode::ShortTerm;
     bool savedBrightness100 = false;
     bool savedBrightness75 = false;
     bool savedBrightness50 = false;
     bool savedBrightness25 = false;
 
-    // Display dimensions
-    static constexpr uint16_t kScreenWidth = 170;
-    static constexpr uint16_t kScreenHeight = 320;
-    static constexpr uint16_t kBufferSize = kScreenWidth * kScreenHeight;  // Full screen buffer
-    static constexpr size_t kRingBufferSize = 150;
+    // Ring buffers for IAQ parameters
+    struct ParameterBuffers {
+        // Short-term 
+        lv_coord_t short_term_ring_buffer[kRingBufferSize];
+        
+        // Mid-term 
+        lv_coord_t mid_term_ring_buffer[kRingBufferSize];
+        float mid_term_sum = 0.0f;
+        uint8_t mid_term_count = 0;
+        
+        // Long-term
+        lv_coord_t long_term_ring_buffer[kRingBufferSize];
+        float long_term_sum = 0.0f;
+        uint8_t long_term_count = 0;
+    };
+    
+    ParameterBuffers pm1_buffers;
+    ParameterBuffers pm2p5_buffers;
+    ParameterBuffers pm4_buffers;
+    ParameterBuffers pm10_buffers;
+    ParameterBuffers co2_buffers;
+    ParameterBuffers voc_buffers;
+    ParameterBuffers nox_buffers;
+    ParameterBuffers temp_buffers;
+    ParameterBuffers rh_buffers;
+    
+    // Helper functions for buffer management
+    void updateParameterBuffer(ParameterBuffers* buffers, float value);
+    
+    // Chart series pointers
+    lv_chart_series_t* pm1_series;
+    lv_chart_series_t* pm2p5_series;
+    lv_chart_series_t* pm4_series;
+    lv_chart_series_t* pm10_series;
+    lv_chart_series_t* co2_series;
+    lv_chart_series_t* voc_series;
+    lv_chart_series_t* nox_series;
+    lv_chart_series_t* temp_series;
+    lv_chart_series_t* rh_series;
 
     // Display hardware
     TFT_eSPI tft;
@@ -96,28 +158,6 @@ private:
     // Screen management
     uint8_t currentScreenIndex = 0;
     #define NUM_SCREENS 12  // Main, PM, CO2, VOC, NOx, Temp, RH, FRC, Settings, Brightness, ChartTime, Altitude
-
-    // Ring buffers for IAQ parameters
-    lv_coord_t pm1_ring_buffer[kRingBufferSize];
-    lv_coord_t pm2p5_ring_buffer[kRingBufferSize];
-    lv_coord_t pm4_ring_buffer[kRingBufferSize];
-    lv_coord_t pm10_ring_buffer[kRingBufferSize];
-    lv_coord_t co2_ring_buffer[kRingBufferSize];
-    lv_coord_t voc_ring_buffer[kRingBufferSize];
-    lv_coord_t nox_ring_buffer[kRingBufferSize];
-    lv_coord_t temp_ring_buffer[kRingBufferSize];
-    lv_coord_t rh_ring_buffer[kRingBufferSize];
-    
-    // Chart series pointers
-    lv_chart_series_t* pm1_series;
-    lv_chart_series_t* pm2p5_series;
-    lv_chart_series_t* pm4_series;
-    lv_chart_series_t* pm10_series;
-    lv_chart_series_t* co2_series;
-    lv_chart_series_t* voc_series;
-    lv_chart_series_t* nox_series;
-    lv_chart_series_t* temp_series;
-    lv_chart_series_t* rh_series;
 
     // Chart range labels
     lv_obj_t* pm_min_label;
@@ -204,6 +244,14 @@ private:
     void update_ring_buffer(lv_coord_t* buffer, float value);
     
     /**
+     * @brief Validate and scale a sensor value based on its type
+     * @param buffer The ring buffer the value will be stored in
+     * @param value The raw sensor value to validate and scale
+     * @return The scaled value, or -1.0f if the value is invalid
+     */
+    float valid_value(lv_coord_t* buffer, float value);
+    
+    /**
      * @brief Update chart series with ring buffer values
      * @param chart The chart object
      * @param series The series to update
@@ -215,10 +263,10 @@ private:
      * @param series4 Optional fourth series (for PM chart)
      * @param buffer4 Optional fourth buffer (for PM chart)
      */
-    void update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, lv_coord_t* buffer,
-                           lv_chart_series_t* series2 = nullptr, lv_coord_t* buffer2 = nullptr,
-                           lv_chart_series_t* series3 = nullptr, lv_coord_t* buffer3 = nullptr,
-                           lv_chart_series_t* series4 = nullptr, lv_coord_t* buffer4 = nullptr);
+    void update_chart_series(lv_obj_t* chart, lv_chart_series_t* series, ParameterBuffers* buffer,
+                           lv_chart_series_t* series2 = nullptr, ParameterBuffers* buffer2 = nullptr,
+                           lv_chart_series_t* series3 = nullptr, ParameterBuffers* buffer3 = nullptr,
+                           lv_chart_series_t* series4 = nullptr, ParameterBuffers* buffer4 = nullptr);
 
     /**
      * @brief Calculate and set adaptive range for a chart based on its data
@@ -235,4 +283,11 @@ private:
                                 float default_min, float default_max, float min_spread,
                                 lv_coord_t* buffer2 = nullptr, lv_coord_t* buffer3 = nullptr,
                                 lv_coord_t* buffer4 = nullptr);
+
+    /**
+     * @brief Cycle through the chart display modes
+     * @param up Whether to cycle up or down
+     * @param reset Whether to reset the display mode to the saved value
+     */
+    void cycleChartDisplayMode(bool up = false, bool reset = false);
 };

@@ -140,23 +140,10 @@ It is necessary to manually assembly the two ui exports. The main screens will b
 
 Contgratulations, you merged both projects. If you add new screens, make sure to update display_task.h and display_task.cpp. If you add a lot of new stuff, you might need to increase LV_MEM_SIZE in lv_conf.h
 
-### Building
+### Known Bugs
 
-```bash
-pio run
-```
-
-### Uploading
-
-```bash
-pio run -t upload
-```
-
-### Monitoring
-
-```bash
-pio device monitor
-```
+- Screen sometimes not fully refreshing when switching screen showing remenants of previous screens
+- ledcWrite function in setDisplayBrightness not always setting 100% duty cycle correctly
 
 ## License
 
