@@ -209,4 +209,33 @@ void ui_ChartTimeScreen_screen_init(void)
     lv_obj_set_style_text_align(ui_ChartTimeScreen_LabelLeft, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_ChartTimeScreen_LabelLeft, &ui_font_Arial_Bold_13, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_ChartTimeScreen_PanelInfo2 = lv_obj_create(ui_ChartTimeScreen);
+    lv_obj_set_width(ui_ChartTimeScreen_PanelInfo2, 170);
+    lv_obj_set_height(ui_ChartTimeScreen_PanelInfo2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_ChartTimeScreen_PanelInfo2, 0);
+    lv_obj_set_y(ui_ChartTimeScreen_PanelInfo2, 60);
+    lv_obj_set_align(ui_ChartTimeScreen_PanelInfo2, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_ChartTimeScreen_PanelInfo2, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_flex_align(ui_ChartTimeScreen_PanelInfo2, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_END);
+    lv_obj_clear_flag(ui_ChartTimeScreen_PanelInfo2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_radius(ui_ChartTimeScreen_PanelInfo2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_ChartTimeScreen_PanelInfo2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_ChartTimeScreen_PanelInfo2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_ChartTimeScreen_PanelInfo2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_ChartTimeScreen_PanelInfo2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_ChartTimeScreen_PanelInfo2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_ChartTimeScreen_PanelInfo2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_ChartTimeScreen_PanelInfo2, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_ChartTimeScreen_PanelInfo2, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_ChartTimeScreen_LabelInfo2 = lv_label_create(ui_ChartTimeScreen_PanelInfo2);
+    lv_obj_set_width(ui_ChartTimeScreen_LabelInfo2, 170);
+    lv_obj_set_height(ui_ChartTimeScreen_LabelInfo2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_ChartTimeScreen_LabelInfo2, 0);
+    lv_obj_set_y(ui_ChartTimeScreen_LabelInfo2, 30);
+    lv_obj_set_align(ui_ChartTimeScreen_LabelInfo2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_ChartTimeScreen_LabelInfo2, "Info: Long press right button on any chart to change this setting.");
+    lv_obj_set_style_text_align(ui_ChartTimeScreen_LabelInfo2, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ChartTimeScreen_LabelInfo2, &ui_font_Arial_Bold_13, LV_PART_MAIN | LV_STATE_DEFAULT);
+
 }

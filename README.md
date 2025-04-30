@@ -145,6 +145,13 @@ Contgratulations, you merged both projects. If you add new screens, make sure to
 - Screen sometimes not fully refreshing when switching screen showing remenants of previous screens
 - ledcWrite function in setDisplayBrightness not always setting 100% duty cycle correctly
 
+### TODO
+
+- [ ] Reset charts when runtime_ticks is zero (after altitude or FRC changes)
+- [ ] Safe altitude setting
+- [ ] Implement offset compensation based on screen brightness
+- [ ] Add FRC successful message
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details. 

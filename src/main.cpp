@@ -58,7 +58,7 @@ void setup() {
     
     // Launch I2C scan task
     if (launchTaskWithVerification(
-        i2cScanTask,
+        I2CScanTask::i2cScanTask,
         I2C_SCAN_TASK_NAME,
         I2C_STACK_SIZE,
         nullptr,
@@ -69,6 +69,7 @@ void setup() {
         while (1) delay(100);
     }
     
+    #ifdef SERIAL_LOGGING
     // Launch serial logging task
     if (launchTaskWithVerification(
         serialLoggingTask,
@@ -81,7 +82,7 @@ void setup() {
         Serial.println("Failed to create serial logging task");
         while (1) delay(100);
     }
-
+    #endif
     // Launch display task
     if (launchTaskWithVerification(
         DisplayTask::displayTask,

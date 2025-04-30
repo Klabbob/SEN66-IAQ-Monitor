@@ -1,5 +1,6 @@
 #include "tasks/display_task.h"
 #include "tasks/live_data_manager.h"
+#include "tasks/i2c_scan_task.h"
 #include <cstdio>
 
 // Initialize static member
@@ -848,7 +849,7 @@ void DisplayTask::handleLeftButtonPress() {
                 // Read current value and decrease by 10ppm
                 const char* currentText = lv_label_get_text(ui_FRCScreen_TargetValue);
                 int currentValue = atoi(currentText);
-                if (currentValue > 0) {
+                if (currentValue > 400) {
                     currentValue -= 10;
                     lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", currentValue);
                 }
@@ -1109,7 +1110,19 @@ void DisplayTask::handleLeftButtonLongPress() {
 void DisplayTask::handleRightButtonLongPress() {
     if (inSettingsMode) {
         exitSettingsMode();
-        //apply settings TODO
+        // Apply the settings when exiting settings mode
+        switch (currentState) {
+            case ScreenState::FRCScreen: {
+                int32_t frcValue = atoi(lv_label_get_text(ui_FRCScreen_TargetValue));
+                I2CScanTask::getInstance().setFRCValue(frcValue);
+                break;
+            }
+            case ScreenState::AltitudeScreen: {
+                int32_t altitude = atoi(lv_label_get_text(ui_AltitudeScreen_TargetValue));
+                I2CScanTask::getInstance().setAltitude(altitude);
+                break;
+            }
+        }
         return;
     }
 
@@ -1360,13 +1373,17 @@ void DisplayTask::cycleChartDisplayMode(bool up, bool reset) {
 }
 
 void DisplayTask::setDisplayBrightness(uint8_t brightness) {
+    #ifdef DEBUG_MODE
     // Check current duty cycle
     uint32_t currentDuty = ledcRead(kLEDCChannel);
     Serial.printf("Current duty cycle: %u, Setting to: %u\n", currentDuty, brightness);
+    #endif
     
     ledcWrite(kLEDCChannel, brightness);
     vTaskDelay(pdMS_TO_TICKS(10));
     
+    #ifdef DEBUG_MODE
     currentDuty = ledcRead(kLEDCChannel);
     Serial.printf("Final PWM duty cycle: %u\n", currentDuty);
+    #endif
 }

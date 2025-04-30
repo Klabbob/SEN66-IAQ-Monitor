@@ -212,7 +212,7 @@ void ui_FRCScreen_screen_init(void)
     lv_obj_set_style_pad_bottom(ui_FRCScreen_PanelInfo, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_FRCScreen_LabelInfo = lv_label_create(ui_FRCScreen_PanelInfo);
-    lv_obj_set_width(ui_FRCScreen_LabelInfo, 170);
+    lv_obj_set_width(ui_FRCScreen_LabelInfo, 160);
     lv_obj_set_height(ui_FRCScreen_LabelInfo, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_FRCScreen_LabelInfo, 0);
     lv_obj_set_y(ui_FRCScreen_LabelInfo, 30);

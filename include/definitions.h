@@ -2,10 +2,16 @@
 
 #include <cstdint>
 
+// uncomment to enable debug mode
+// #define DEBUG_MODE
+
+// uncomment to enable serial logging
+#define SERIAL_LOGGING
+
 // I2C Configuration
 #define SENSOR_I2C_ADDRESS 0x6B
-#define SENSOR_READY_CHECK_INTERVAL 100  // ms
-#define SENSOR_READY_TIMEOUT 1000        // ms
+#define SENSOR_READY_CHECK_INTERVAL 1000    // ms
+#define SENSOR_READY_RECHECK_TIME 100       // ms
 
 
 //STAR Engine Parameters:

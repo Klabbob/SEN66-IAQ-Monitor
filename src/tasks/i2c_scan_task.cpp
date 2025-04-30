@@ -1,8 +1,33 @@
 #include "tasks/i2c_scan_task.h"
 #include "tasks/live_data_manager.h"
 
+// Initialize static member variables
+int32_t I2CScanTask::currentAltitude = 0;
+bool I2CScanTask::applyAltitude = false;
+int32_t I2CScanTask::currentFRCValue = 0;
+bool I2CScanTask::performFRC = false;
+uint16_t I2CScanTask::correction = 0;
+
+// I2CScanTask method implementations
+void I2CScanTask::setAltitude(int32_t altitude) {
+    currentAltitude = altitude;
+    applyAltitude = true;
+    #ifdef DEBUG_MODE
+    Serial.printf("Altitude set to: %d meters\n", currentAltitude);
+    #endif
+}
+
+int32_t I2CScanTask::setFRCValue(int32_t frcValue) {
+    currentFRCValue = frcValue;
+    performFRC = true;
+    #ifdef DEBUG_MODE
+    Serial.printf("FRC value set to: %d ppm\n", currentFRCValue);
+    #endif
+    return currentFRCValue;
+}
+
 // Initialize sensor
-bool initSensor(SensirionI2cSen66& sensor) {
+bool I2CScanTask::initSensor(SensirionI2cSen66& sensor) {
     Wire.begin(PIN_IIC_SDA, PIN_IIC_SCL);
     Wire.setClock(100000); // Set I2C clock to 100kHz
     
@@ -65,21 +90,7 @@ bool initSensor(SensirionI2cSen66& sensor) {
     return true;
 }
 
-
-// Function to set altitude
-void setAltitude(int32_t altitude) {
-    currentAltitude = altitude;
-    Serial.println(currentAltitude);
-}
-
-// Function to set FRC value
-int32_t setFRCValue(int32_t frcValue) {
-    currentFRCValue = frcValue;
-    Serial.println(currentFRCValue);
-    return currentFRCValue;
-}
-
-void i2cScanTask(void* parameter) {
+void I2CScanTask::i2cScanTask(void* parameter) {
     // Initialize sensor
     SensirionI2cSen66 sensor;
     if (!initSensor(sensor)) {
@@ -111,9 +122,87 @@ void i2cScanTask(void* parameter) {
     
     while (true) {
         uint32_t currentTime = xTaskGetTickCount() * portTICK_PERIOD_MS;
+
+        // if a new altitude is set, stop the measurement, set the altitude, and start the measurement again
+        if (applyAltitude) {
+            // Stop continuous measurement
+            uint16_t error = sensor.stopMeasurement();
+            if (error) {
+                #ifdef DEBUG_MODE
+                char errorMessage[256];
+                errorToString(error, errorMessage, 256);
+                Serial.print("Error stopping measurement: ");
+                Serial.println(errorMessage);
+                #endif
+            }
+            
+            // Wait for 1000ms as required
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            
+            // Set the altitude using the correct method
+            error = sensor.setSensorAltitude(static_cast<uint16_t>(currentAltitude));
+            if (error) {
+                #ifdef DEBUG_MODE
+                char errorMessage[256];
+                errorToString(error, errorMessage, 256);
+                Serial.print("Error setting altitude: ");
+                Serial.println(errorMessage);
+                #endif
+            }
+
+            // Start measurement
+            error = sensor.startContinuousMeasurement();
+            if (error) {
+                #ifdef DEBUG_MODE
+                Serial.println("Error executing startContinuousMeasurement");
+                #endif
+            }
+            
+            data.runtime_ticks = 0;
+            applyAltitude = false;
+        }
+
+        // if a new FRC value is set, stop the measurement, set the FRC value, and start the measurement again
+        if (performFRC) {
+            // Stop continuous measurement
+            uint16_t error = sensor.stopMeasurement();
+            if (error) {
+                #ifdef DEBUG_MODE
+                Serial.println("Error executing stopMeasurement");
+                #endif
+            }
+
+            // Wait for 1000ms as required
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            
+            // Set the FRC value
+            error = sensor.performForcedCo2Recalibration(static_cast<uint16_t>(currentFRCValue), I2CScanTask::correction);
+            // Adjust correction value: FRC correction [ppm CO2] = return value - 0x8000
+            I2CScanTask::correction = I2CScanTask::correction - 0x8000;
+            if (error) {
+                #ifdef DEBUG_MODE
+                Serial.println("Error setting FRC value");
+                #endif
+            } else {
+                #ifdef DEBUG_MODE
+                Serial.printf("FRC calibration successful. Correction value: %d ppm CO2\n", I2CScanTask::correction);
+                #endif
+            }   
+            
+            // Start measurement
+            error = sensor.startContinuousMeasurement();
+            if (error) {
+                #ifdef DEBUG_MODE
+                Serial.println("Error executing startContinuousMeasurement");
+                #endif
+            }
+            
+            data.runtime_ticks = 0;
+            performFRC = false;
+        }
         
         // Wait 900ms before checking if data is ready
-        if (currentTime - lastUpdate >= 900) {
+        if (currentTime - lastUpdate >= SENSOR_READY_CHECK_INTERVAL) {
             uint8_t padding;
             bool dataReady;
             uint16_t error = sensor.getDataReady(padding, dataReady);
@@ -190,11 +279,11 @@ void i2cScanTask(void* parameter) {
                 }
             } else {
                 // Data not ready, wait another 100ms
-                vTaskDelay(pdMS_TO_TICKS(100));
+                vTaskDelay(pdMS_TO_TICKS(SENSOR_READY_RECHECK_TIME));
             }
         } else {
             // Wait until we're close to the next reading time
-            vTaskDelay(pdMS_TO_TICKS(100));
+            vTaskDelay(pdMS_TO_TICKS(SENSOR_READY_RECHECK_TIME));
         }
     }
 } 

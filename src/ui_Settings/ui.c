@@ -74,6 +74,8 @@ lv_obj_t * ui_ChartTimeScreen_ImageRight;
 lv_obj_t * ui_ChartTimeScreen_ContainerLeft;
 lv_obj_t * ui_ChartTimeScreen_ImageLeft;
 lv_obj_t * ui_ChartTimeScreen_LabelLeft;
+lv_obj_t * ui_ChartTimeScreen_PanelInfo2;
+lv_obj_t * ui_ChartTimeScreen_LabelInfo2;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_BrightnessScreen

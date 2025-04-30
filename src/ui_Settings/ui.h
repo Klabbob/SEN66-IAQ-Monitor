@@ -96,6 +96,8 @@ extern lv_obj_t * ui_ChartTimeScreen_ImageRight;
 extern lv_obj_t * ui_ChartTimeScreen_ContainerLeft;
 extern lv_obj_t * ui_ChartTimeScreen_ImageLeft;
 extern lv_obj_t * ui_ChartTimeScreen_LabelLeft;
+extern lv_obj_t * ui_ChartTimeScreen_PanelInfo2;
+extern lv_obj_t * ui_ChartTimeScreen_LabelInfo2;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_BrightnessScreen
