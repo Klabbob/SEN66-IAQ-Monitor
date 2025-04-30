@@ -2,6 +2,12 @@
 
 #include <cstdint>
 
+// I2C Configuration
+#define SENSOR_I2C_ADDRESS 0x6B
+#define SENSOR_READY_CHECK_INTERVAL 100  // ms
+#define SENSOR_READY_TIMEOUT 1000        // ms
+
+
 //STAR Engine Parameters:
 //  Acceleration
 #define K                            20
@@ -81,6 +87,7 @@ struct SensorData {
     uint16_t rawVOC;         ///< Raw VOC ticks without scale factor
     uint16_t rawNOx;         ///< Raw NOx ticks without scale factor
     uint16_t rawCO2;         ///< Not interpolated CO₂ concentration [ppm]
+    uint32_t runtime_ticks;  // Runtime in ticks since start
 };
 
 // Sensor threshold definitions

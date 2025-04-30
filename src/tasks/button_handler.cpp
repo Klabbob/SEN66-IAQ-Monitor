@@ -19,10 +19,14 @@ ButtonHandler::ButtonHandler()
     buttonRight.setLongClickDetectedHandler([this](Button2& btn) { handleRightButtonLongPress(btn); });
     
     // Set debounce time and long press duration
-    buttonLeft.setDebounceTime(50);
-    buttonRight.setDebounceTime(50);
+    buttonLeft.setDebounceTime(40);
+    buttonRight.setDebounceTime(40);
     buttonLeft.setLongClickTime(500);  // 500ms for long press
     buttonRight.setLongClickTime(500);
+    
+    // Disable double-click detection
+    buttonLeft.setDoubleClickTime(0);
+    buttonRight.setDoubleClickTime(0);
 
     // Set long press as not retriggerable
     buttonLeft.setLongClickDetectedRetriggerable(false);
@@ -35,7 +39,7 @@ void ButtonHandler::buttonTask(void* parameter) {
     while (true) {
         handler.buttonLeft.loop();
         handler.buttonRight.loop();
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 

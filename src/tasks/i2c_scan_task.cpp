@@ -3,8 +3,8 @@
 
 // Initialize sensor
 bool initSensor(SensirionI2cSen66& sensor) {
-    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
-    Wire.setClock(100000); // Set I2C clock to 100kHz for better reliability
+    Wire.begin(PIN_IIC_SDA, PIN_IIC_SCL);
+    Wire.setClock(100000); // Set I2C clock to 100kHz
     
     uint16_t error;
     char errorMessage[256];
@@ -65,6 +65,20 @@ bool initSensor(SensirionI2cSen66& sensor) {
     return true;
 }
 
+
+// Function to set altitude
+void setAltitude(int32_t altitude) {
+    currentAltitude = altitude;
+    Serial.println(currentAltitude);
+}
+
+// Function to set FRC value
+int32_t setFRCValue(int32_t frcValue) {
+    currentFRCValue = frcValue;
+    Serial.println(currentFRCValue);
+    return currentFRCValue;
+}
+
 void i2cScanTask(void* parameter) {
     // Initialize sensor
     SensirionI2cSen66 sensor;
@@ -89,7 +103,8 @@ void i2cScanTask(void* parameter) {
         .rawTemperature = 0,
         .rawVOC = 0,
         .rawNOx = 0,
-        .rawCO2 = 0
+        .rawCO2 = 0,
+        .runtime_ticks = 0
     };
     
     uint32_t lastUpdate = 0;
@@ -163,6 +178,9 @@ void i2cScanTask(void* parameter) {
                         
                         // Update gas concentration
                         data.co2 = tempCo2;
+                        
+                        // Increment runtime counter
+                        data.runtime_ticks++;
                         
                         lastUpdate = currentTime;
                         

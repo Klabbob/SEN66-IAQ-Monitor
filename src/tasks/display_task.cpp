@@ -86,6 +86,14 @@ void DisplayTask::displayTask(void* parameter) {
             
             // Update indicator states
             instance.update_all_indicators(data);
+
+            //Update Runtime on FRC Screen
+            if (data.runtime_ticks >= 120) {
+                lv_obj_clear_state(ui_FRCScreen_LabelRuntime, LV_STATE_USER_1);
+            } else {
+                lv_obj_add_state(ui_FRCScreen_LabelRuntime, LV_STATE_USER_1);
+            }
+            lv_label_set_text_fmt(ui_FRCScreen_LabelRuntime, "%lu sec", data.runtime_ticks);
         }
 
         // Handle LVGL tasks
@@ -946,8 +954,10 @@ void DisplayTask::handleRightButtonPress() {
                 // Read current value and increase by 25m
                 const char* currentText = lv_label_get_text(ui_AltitudeScreen_TargetValue);
                 int currentValue = atoi(currentText);
-                currentValue += 25;
-                lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", currentValue);
+                if (currentValue < 3000){
+                    currentValue += 25;
+                    lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", currentValue);
+                }
                 break;
             }
                 
