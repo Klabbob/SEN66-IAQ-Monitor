@@ -147,8 +147,8 @@ Contgratulations, you merged both projects. If you add new screens, make sure to
 
 ### TODO
 
-- [ ] Reset charts when runtime_ticks is zero (after altitude or FRC changes)
-- [ ] Safe altitude setting
+- [x] Reset charts when runtime_ticks is zero (after altitude or FRC changes)
+- [x] Save altitude setting
 - [ ] Implement offset compensation based on screen brightness
 - [ ] Add FRC successful message
 

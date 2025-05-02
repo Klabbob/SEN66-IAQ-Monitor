@@ -29,9 +29,11 @@ void disableWireless() {
 void setup() {
     Serial.begin(115200);
     
-    // // Wait for serial to be ready
-    // while (!Serial) delay(100);
-    // Serial.println("SEN66 Sensor Test Starting...");
+    #ifdef DEBUG_MODE
+    // Wait for serial to be ready
+    while (!Serial) delay(100);
+    Serial.println("SEN66 Sensor Test Starting...");
+    #endif
 
       // Set CPU frequency to 80MHz
     setCpuFrequencyMhz(80);

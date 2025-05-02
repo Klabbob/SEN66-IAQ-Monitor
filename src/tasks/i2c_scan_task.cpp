@@ -1,5 +1,8 @@
 #include "tasks/i2c_scan_task.h"
 #include "tasks/live_data_manager.h"
+#include <nvs_flash.h>
+#include <esp_partition.h>
+#include <esp_err.h>
 
 // Initialize static member variables
 int32_t I2CScanTask::currentAltitude = 0;
@@ -12,6 +15,18 @@ uint16_t I2CScanTask::correction = 0;
 void I2CScanTask::setAltitude(int32_t altitude) {
     currentAltitude = altitude;
     applyAltitude = true;
+    
+    // Save altitude to preferences
+    Preferences prefs;
+    if (!prefs.begin(PREF_NAMESPACE, false)) {
+        #ifdef DEBUG_MODE
+        Serial.println("Failed to open preferences for writing");
+        #endif
+        return;
+    }
+    prefs.putInt(PREF_ALTITUDE_KEY, altitude);
+    prefs.end();
+    
     #ifdef DEBUG_MODE
     Serial.printf("Altitude set to: %d meters\n", currentAltitude);
     #endif
@@ -28,6 +43,7 @@ int32_t I2CScanTask::setFRCValue(int32_t frcValue) {
 
 // Initialize sensor
 bool I2CScanTask::initSensor(SensirionI2cSen66& sensor) {
+    // Initialize I2C
     Wire.begin(PIN_IIC_SDA, PIN_IIC_SCL);
     Wire.setClock(100000); // Set I2C clock to 100kHz
     
@@ -76,6 +92,34 @@ bool I2CScanTask::initSensor(SensirionI2cSen66& sensor) {
         Serial.println(errorMessage);
         #endif
         return false;
+    }
+    
+    // Read altitude from preferences
+    Preferences prefs;
+    if (!prefs.begin(PREF_NAMESPACE, true)) {
+        #ifdef DEBUG_MODE
+        Serial.println("Failed to open preferences for reading, using default altitude (0)");
+        #endif
+        currentAltitude = 0;  // Use default value
+    } else {
+        currentAltitude = prefs.getInt(PREF_ALTITUDE_KEY, 0);  // Default to 0 if not set
+        prefs.end();
+    }
+    
+    // Apply altitude if it's not 0
+    if (currentAltitude != 0) {
+        error = sensor.setSensorAltitude(static_cast<uint16_t>(currentAltitude));
+        if (error) {
+            #ifdef DEBUG_MODE
+            Serial.print("Error setting altitude: ");
+            errorToString(error, errorMessage, 256);
+            Serial.println(errorMessage);
+            #endif
+            return false;
+        }
+        #ifdef DEBUG_MODE
+        Serial.printf("Applied stored altitude: %d meters\n", currentAltitude);
+        #endif
     }
     
     // Start measurement
@@ -136,9 +180,6 @@ void I2CScanTask::i2cScanTask(void* parameter) {
                 #endif
             }
             
-            // Wait for 1000ms as required
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            
             // Set the altitude using the correct method
             error = sensor.setSensorAltitude(static_cast<uint16_t>(currentAltitude));
             if (error) {
@@ -171,9 +212,6 @@ void I2CScanTask::i2cScanTask(void* parameter) {
                 Serial.println("Error executing stopMeasurement");
                 #endif
             }
-
-            // Wait for 1000ms as required
-            vTaskDelay(pdMS_TO_TICKS(1000));
             
             // Set the FRC value
             error = sensor.performForcedCo2Recalibration(static_cast<uint16_t>(currentFRCValue), I2CScanTask::correction);
@@ -201,7 +239,7 @@ void I2CScanTask::i2cScanTask(void* parameter) {
             performFRC = false;
         }
         
-        // Wait 900ms before checking if data is ready
+        // Wait 1000ms before checking if data is ready
         if (currentTime - lastUpdate >= SENSOR_READY_CHECK_INTERVAL) {
             uint8_t padding;
             bool dataReady;

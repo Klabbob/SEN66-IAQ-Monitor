@@ -27,6 +27,10 @@
 #define SLOT_0_TIME_CONSTANT         700    //Tau63 of 700 seconds
 #define SLOT_0_SLOT_TIME             0      //Slot 0
 
+// Preferences namespace and key
+#define PREF_NAMESPACE              "sensor_config"
+#define PREF_ALTITUDE_KEY           "altitude"
+
 /*ESP32S3*/
 #define PIN_LCD_BL                   38
 

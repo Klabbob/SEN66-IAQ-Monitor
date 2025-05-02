@@ -33,6 +33,11 @@ void DisplayTask::displayTask(void* parameter) {
         // Check for new sensor data
         if (xQueueReceive(xDataQueue, &message, pdMS_TO_TICKS(QUEUE_TIMEOUT_MS)) == pdTRUE) {
             const SensorData& data = message.data;
+
+            if (data.runtime_ticks == 1) {
+                // Initialize buffers to reset all values as the sensor just started
+                instance.init_buffers();
+            }
             
             // Update ring buffers with new data
             instance.updateParameterBuffer(&instance.pm1_buffers, data.pm1p0);
@@ -179,8 +184,8 @@ void DisplayTask::configure_chart_antialiasing(lv_obj_t* chart) {
     lv_obj_set_style_pad_all(chart, 1, LV_PART_MAIN);
 }
 
-void DisplayTask::init_ring_buffers() {
-    // Initialize all ring buffers with -1
+void DisplayTask::init_buffers() {
+    // Initialize all buffers
     for (size_t i = 0; i < kRingBufferSize; i++) {
         pm1_buffers.short_term_ring_buffer[i] = LV_CHART_POINT_NONE;
         pm1_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
@@ -210,6 +215,42 @@ void DisplayTask::init_ring_buffers() {
         rh_buffers.mid_term_ring_buffer[i] = LV_CHART_POINT_NONE;
         rh_buffers.long_term_ring_buffer[i] = LV_CHART_POINT_NONE;
     }
+    pm1_buffers.mid_term_sum = 0.0f;
+    pm1_buffers.mid_term_count = 0;
+    pm1_buffers.long_term_sum = 0.0f;
+    pm1_buffers.long_term_count = 0;
+    pm2p5_buffers.mid_term_sum = 0.0f;
+    pm2p5_buffers.mid_term_count = 0;
+    pm2p5_buffers.long_term_sum = 0.0f;
+    pm2p5_buffers.long_term_count = 0;
+    pm4_buffers.mid_term_sum = 0.0f;
+    pm4_buffers.mid_term_count = 0;
+    pm4_buffers.long_term_sum = 0.0f;
+    pm4_buffers.long_term_count = 0;
+    pm10_buffers.mid_term_sum = 0.0f;
+    pm10_buffers.mid_term_count = 0;
+    pm10_buffers.long_term_sum = 0.0f;
+    pm10_buffers.long_term_count = 0;
+    co2_buffers.mid_term_sum = 0.0f;
+    co2_buffers.mid_term_count = 0;
+    co2_buffers.long_term_sum = 0.0f;
+    co2_buffers.long_term_count = 0;
+    voc_buffers.mid_term_sum = 0.0f;
+    voc_buffers.mid_term_count = 0;
+    voc_buffers.long_term_sum = 0.0f;
+    voc_buffers.long_term_count = 0;
+    nox_buffers.mid_term_sum = 0.0f;
+    nox_buffers.mid_term_count = 0;
+    nox_buffers.long_term_sum = 0.0f;
+    nox_buffers.long_term_count = 0;
+    temp_buffers.mid_term_sum = 0.0f;
+    temp_buffers.mid_term_count = 0;
+    temp_buffers.long_term_sum = 0.0f;
+    temp_buffers.long_term_count = 0;
+    rh_buffers.mid_term_sum = 0.0f;
+    rh_buffers.mid_term_count = 0;
+    rh_buffers.long_term_sum = 0.0f;
+    rh_buffers.long_term_count = 0;
 }
 
 void DisplayTask::update_ring_buffer(lv_coord_t* buffer, float value) {
@@ -515,6 +556,14 @@ void DisplayTask::init_display() {
     ui_init();
     vTaskDelay(pdMS_TO_TICKS(5)); //yield to other tasks
 
+    // Read altitude from preferences and update UI
+    Preferences prefs;
+    if (prefs.begin(PREF_NAMESPACE, true)) {
+        int32_t altitude = prefs.getInt(PREF_ALTITUDE_KEY, 0);
+        lv_label_set_text_fmt(ui_AltitudeScreen_TargetValue, "%d", altitude);
+        prefs.end();
+    }
+
     // Hide settings screen containers
     // FRC Screen
     lv_label_set_text(ui_FRCScreen_LabelUp, "");
@@ -537,7 +586,7 @@ void DisplayTask::init_display() {
     lv_img_set_src(ui_BrightnessScreen_ImageDown, &ui_img_blank_png);
 
     // Initialize ring buffers
-    init_ring_buffers();
+    init_buffers();
 
     // Configure antialiasing for all charts
     configure_chart_antialiasing(ui_PMScreen_PMChart);

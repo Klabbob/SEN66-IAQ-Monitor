@@ -5,6 +5,7 @@
 #include <ui/ui.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <Preferences.h>
 #include "definitions.h"
 
 /**
@@ -232,9 +233,9 @@ private:
     void update_value_text(lv_obj_t* label, float value, uint8_t decimals);
 
     /**
-     * @brief Initialize all ring buffers with -1
+     * @brief Initialize all buffers
      */
-    void init_ring_buffers();
+    void init_buffers();
     
     /**
      * @brief Update a ring buffer with a new value

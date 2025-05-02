@@ -5,6 +5,7 @@
 #include <SensirionI2cSen66.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <Preferences.h>
 #include "definitions.h"
 
 class I2CScanTask {
@@ -18,6 +19,7 @@ public:
      * @param altitude Altitude in meters above sea level
      * @details Updates the stored altitude value used for environmental compensation
      *          in sensor measurements. Altitude affects air pressure and density.
+     *          The value is persisted in non-volatile storage.
      */
     void setAltitude(int32_t altitude);
 
@@ -44,6 +46,7 @@ private:
     static int32_t currentFRCValue;  // FRC value in ppm
     static bool performFRC;
     static uint16_t correction;      // Correction value for FRC calibration
+    
     // Static sensor initialization function
     static bool initSensor(SensirionI2cSen66& sensor);
 };
