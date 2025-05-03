@@ -892,6 +892,17 @@ void DisplayTask::update_value_text(lv_obj_t* label, float value, uint8_t decima
 }
 
 void DisplayTask::handleLeftButtonPress() {
+    // if processing is true, do not process the button press
+    if (processing) {
+        return;
+    }
+    // any button press will reset the FRC screen to the setting mode
+    if (frcconfirmed) {
+        lv_label_set_text(ui_FRCScreen_Title, savedFRCTitle.c_str());
+        lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", savedFRCSetValue);
+        lv_label_set_text(ui_FRCScreen_Unit, savedFRCUnit.c_str());
+        frcconfirmed = false;
+    }
     if (inSettingsMode) {
         switch (currentState) {
             case ScreenState::FRCScreen: {
@@ -989,6 +1000,17 @@ void DisplayTask::handleLeftButtonPress() {
 }
 
 void DisplayTask::handleRightButtonPress() {
+    // if processing is true, do not process the button press
+    if (processing) {
+        return;
+    }
+    // any button press will reset the FRC screen to the setting mode
+    if (frcconfirmed) {
+        lv_label_set_text(ui_FRCScreen_Title, savedFRCTitle.c_str());
+        lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", savedFRCSetValue);
+        lv_label_set_text(ui_FRCScreen_Unit, savedFRCUnit.c_str());
+        frcconfirmed = false;
+    }
     if (inSettingsMode) {
         switch (currentState) {
             case ScreenState::FRCScreen: {
@@ -1084,6 +1106,17 @@ void DisplayTask::handleRightButtonPress() {
 }
 
 void DisplayTask::handleLeftButtonLongPress() {
+    // if processing is true, do not process the button press
+    if (processing) {
+        return;
+    }
+    // any button press will reset the FRC screen to the setting mode
+    if (frcconfirmed) {
+        lv_label_set_text(ui_FRCScreen_Title, savedFRCTitle.c_str());
+        lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", savedFRCSetValue);
+        lv_label_set_text(ui_FRCScreen_Unit, savedFRCUnit.c_str());
+        frcconfirmed = false;
+    }
     if (inSettingsMode) {
         // Restore saved state before exiting settings mode
         switch (currentState) {
@@ -1157,13 +1190,39 @@ void DisplayTask::handleLeftButtonLongPress() {
 }
 
 void DisplayTask::handleRightButtonLongPress() {
+    // if processing is true, do not process the button press
+    if (processing) {
+        return;
+    }
+    // any button press will reset the FRC screen to the setting mode
+    if (frcconfirmed) {
+        lv_label_set_text(ui_FRCScreen_Title, savedFRCTitle.c_str());
+        lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", savedFRCSetValue);
+        lv_label_set_text(ui_FRCScreen_Unit, savedFRCUnit.c_str());
+        frcconfirmed = false;
+    }
     if (inSettingsMode) {
         exitSettingsMode();
         // Apply the settings when exiting settings mode
         switch (currentState) {
             case ScreenState::FRCScreen: {
-                int32_t frcValue = atoi(lv_label_get_text(ui_FRCScreen_TargetValue));
-                I2CScanTask::getInstance().setFRCValue(frcValue);
+                processing = true;
+                savedFRCTitle = lv_label_get_text(ui_FRCScreen_Title);
+                savedFRCSetValue = atoi(lv_label_get_text(ui_FRCScreen_TargetValue));
+                savedFRCUnit = lv_label_get_text(ui_FRCScreen_Unit);
+                lv_label_set_text(ui_FRCScreen_Title, "\n");
+                lv_label_set_text(ui_FRCScreen_TargetValue, "applying...");
+                lv_label_set_text(ui_FRCScreen_Unit, "");
+                int16_t correction = I2CScanTask::getInstance().setFRCValue(savedFRCSetValue);
+                if (correction == -32768) {
+                    lv_label_set_text(ui_FRCScreen_TargetValue, "FRC failed");
+                } else {
+                    lv_label_set_text(ui_FRCScreen_Title, "FRC successful, CO2 value corrected by");
+                    lv_label_set_text_fmt(ui_FRCScreen_TargetValue, "%d", correction);
+                    lv_label_set_text(ui_FRCScreen_Unit, "ppm");
+                }
+                frcconfirmed = true;
+                processing = false;
                 break;
             }
             case ScreenState::AltitudeScreen: {

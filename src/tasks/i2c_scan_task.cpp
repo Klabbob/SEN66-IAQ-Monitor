@@ -9,7 +9,8 @@ int32_t I2CScanTask::currentAltitude = 0;
 bool I2CScanTask::applyAltitude = false;
 int32_t I2CScanTask::currentFRCValue = 0;
 bool I2CScanTask::performFRC = false;
-uint16_t I2CScanTask::correction = 0;
+uint16_t I2CScanTask::ucorrection = 0;
+int16_t I2CScanTask::correction = -32768;
 
 // I2CScanTask method implementations
 void I2CScanTask::setAltitude(int32_t altitude) {
@@ -32,13 +33,28 @@ void I2CScanTask::setAltitude(int32_t altitude) {
     #endif
 }
 
-int32_t I2CScanTask::setFRCValue(int32_t frcValue) {
+int16_t I2CScanTask::setFRCValue(int32_t frcValue, uint32_t timeout) {
+    I2CScanTask::correction = -32768;
     currentFRCValue = frcValue;
     performFRC = true;
     #ifdef DEBUG_MODE
     Serial.printf("FRC value set to: %d ppm\n", currentFRCValue);
     #endif
-    return currentFRCValue;
+    // save current time and loop until timeout
+    uint32_t startTime = millis();
+    while (millis() - startTime < timeout) {
+        if (I2CScanTask::correction != -32768) {
+            #ifdef DEBUG_MODE
+            Serial.printf("FRC calibration successful. Correction value: %d ppm\n", I2CScanTask::correction);
+            #endif
+            return I2CScanTask::correction;
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    #ifdef DEBUG_MODE
+    Serial.printf("FRC calibration timed out\n");
+    #endif
+    return I2CScanTask::correction;
 }
 
 // Initialize sensor
@@ -214,9 +230,9 @@ void I2CScanTask::i2cScanTask(void* parameter) {
             }
             
             // Set the FRC value
-            error = sensor.performForcedCo2Recalibration(static_cast<uint16_t>(currentFRCValue), I2CScanTask::correction);
+            error = sensor.performForcedCo2Recalibration(static_cast<uint16_t>(currentFRCValue), I2CScanTask::ucorrection);
             // Adjust correction value: FRC correction [ppm CO2] = return value - 0x8000
-            I2CScanTask::correction = I2CScanTask::correction - 0x8000;
+            I2CScanTask::correction = I2CScanTask::ucorrection - 0x8000;
             if (error) {
                 #ifdef DEBUG_MODE
                 Serial.println("Error setting FRC value");

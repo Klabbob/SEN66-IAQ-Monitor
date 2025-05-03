@@ -90,6 +90,9 @@ private:
     bool savedBrightness75 = false;
     bool savedBrightness50 = false;
     bool savedBrightness25 = false;
+    int32_t savedFRCSetValue = 0;
+    String savedFRCTitle = "";
+    String savedFRCUnit = "";
 
     // Ring buffers for IAQ parameters
     struct ParameterBuffers {
@@ -155,6 +158,8 @@ private:
     // Current state
     ScreenState currentState = ScreenState::MainScreen;
     bool inSettingsMode = false;
+    bool processing = false;
+    bool frcconfirmed = false;
 
     // Screen management
     uint8_t currentScreenIndex = 0;

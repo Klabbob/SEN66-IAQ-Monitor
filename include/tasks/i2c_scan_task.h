@@ -24,13 +24,16 @@ public:
     void setAltitude(int32_t altitude);
 
     /**
-     * @brief Sets the Fast Response Curve (FRC) value for VOC/NOx compensation
-     * @param frcValue FRC value in parts per million (ppm)
-     * @return The set FRC value
-     * @details Updates the stored FRC value used for VOC and NOx index calibration.
-     *          FRC helps improve accuracy of gas measurements by providing a reference point.
+     * @brief Sets the Fast Response Curve (FRC) value for CO2 calibration
+     * @param frcValue Target CO2 concentration in parts per million (ppm)
+     * @param timeout Maximum time in milliseconds to wait for calibration
+     * @return The calibration correction value in ppm, or original frcValue if timeout occurs
+     * @details Performs forced recalibration of the CO2 sensor using a reference gas concentration.
+     *          The correction value indicates the sensor's offset from the reference.
+     *          A positive correction means the sensor was reading too low.
+     *          A negative correction means the sensor was reading too high.
      */
-    int32_t setFRCValue(int32_t frcValue);
+    int16_t setFRCValue(int32_t frcValue, uint32_t timeout = 3000);
 
     // Static task function
     static void i2cScanTask(void* parameter);
@@ -45,7 +48,8 @@ private:
     static bool applyAltitude;
     static int32_t currentFRCValue;  // FRC value in ppm
     static bool performFRC;
-    static uint16_t correction;      // Correction value for FRC calibration
+    static uint16_t ucorrection;    // unsinged Correction value for FRC calibration
+    static int16_t correction;      // Correction value for FRC calibration
     
     // Static sensor initialization function
     static bool initSensor(SensirionI2cSen66& sensor);
