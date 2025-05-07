@@ -30,9 +30,21 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
 ## Hardware Assembly
 
-- Remove the blue and yellow cable from the connector
+- Remove the purple and blue cable from the connector
 - cut the remaining 4 cables to a length of 110mm
 - from the leftovers cut 75mm of the black and red wire
+- Connect the USB C Board
+  - Red 75mm to VBUS
+  - Black 75mm to GND
+- Connect T-Display S3
+  - 75 mm:
+    - Red to 5V
+    - Black to GND
+  - 110 mm with connector:
+    - Red to 3V3
+    - Black to GND
+    - Green to 18
+    - Yellow to 17
 
 ## Installation
 
