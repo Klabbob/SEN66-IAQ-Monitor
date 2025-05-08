@@ -2,6 +2,8 @@
 
 An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
+![SEN66 IAQ Monitor](pictures/SEN66_IAQ_Monitor.png)
+
 ## Features
 
 - Real-time monitoring of:
