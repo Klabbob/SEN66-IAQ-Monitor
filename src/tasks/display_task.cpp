@@ -1372,12 +1372,12 @@ void DisplayTask::updateParameterBuffer(ParameterBuffers* buffers, float value) 
         buffers->mid_term_sum += scaled_value;
         buffers->mid_term_count++;
     }
-    if (buffers->mid_term_count == kMidTermBufferSize - 1) {
+    if (buffers->mid_term_count == kMidTermBufferSize) {
         update_ring_buffer(buffers->mid_term_ring_buffer, buffers->mid_term_sum / kMidTermBufferSize);
         // Accumulate 576 seconds average
         buffers->long_term_sum += buffers->mid_term_sum / kMidTermBufferSize;
         buffers->long_term_count++;
-        if (buffers->long_term_count == kLongTermBufferSize - 1) {
+        if (buffers->long_term_count == kLongTermBufferSize) {
             update_ring_buffer(buffers->long_term_ring_buffer, buffers->long_term_sum / kLongTermBufferSize);
             buffers->long_term_sum = 0.0f;
             buffers->long_term_count = 0;
