@@ -2,9 +2,9 @@
 
 An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
-<div style="text-align:center;">
-  <img src="pictures/SEN66_IAQ_Monitor.png" alt="SEN66 IAQ Monitor" style="width:66%;">
-</div>
+<p align="center">
+  <img src="pictures/SEN66_IAQ_Monitor.png" alt="SEN66 IAQ Monitor" width="300"/>
+</p>
 
 ## Features
 
