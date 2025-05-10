@@ -25,11 +25,11 @@ An Indoor Air Quality Monitor using the [Sensirion SEN66](https://sensirion.com/
 
 ## Hardware Requirements
 
-- [Sensirion SEN66](https://sensirion.com/de/produkte/katalog/SEN66)
+- [Sensirion SEN66](https://sensirion.com/de/produkte/katalog/SEN66), which can be had at many distributors
 - [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125) (make sure to get the non-touch version without soldered pin headers)
-- [Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire)
+- [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire) - alternatively you can use [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the color are different! Both cables can be had at many distributors.
 - [USB C Breackout Board](https://www.sparkfun.com/sparkfun-usb-c-breakout.html) (Knock-offs can also be found on Aliexpress and the likes)
-- 3D Printer to print housing
+- 3D Printer to print the housing
 - M3x10 Bolt
 - (optional) [M3 threaded insert](https://www.3djake.com/3djake/threaded-inserts-50-piece-set)
 
@@ -64,17 +64,20 @@ After printing make sure that the inside part of the top shell where the buttons
   <img src="pictures/SEN66 IAQ Monitor Wiring.png" alt="Wiring Diagram" width="800"/>
 </p>
 
+The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire), if you use the [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the color are different!
+
 - Remove the purple and blue cable from the connector
 - cut the remaining 4 cables to a length of 110mm
 - from the leftovers cut 75mm of the black and red wire
 - Connect the USB C Board
-  - Red 75mm to VBUS
-  - Black 75mm to GND
+  - 75mm:
+    - Red to VBUS
+    - Black to GND
 - Connect T-Display S3
-  - 75 mm:
+  - 75mm:
     - Red to 5V
     - Black to GND
-  - 110 mm with connector:
+  - 110mm with connector:
     - Red to 3V3
     - Black to GND
     - Green to GPIO18
@@ -82,6 +85,7 @@ After printing make sure that the inside part of the top shell where the buttons
 
 ### Assembly
 
+0. If you chose the version with insert, use the soldering iron to insert the M3 threaded insert in to the top shell
 1. Insert the LilyGo T-Display-S3 into the top shell
 2. Insert the buttons
 3. Connect the SEN66 and push it in
