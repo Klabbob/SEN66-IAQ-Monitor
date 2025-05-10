@@ -27,7 +27,7 @@ An Indoor Air Quality Monitor using the [Sensirion SEN66](https://sensirion.com/
 
 - [Sensirion SEN66](https://sensirion.com/de/produkte/katalog/SEN66), which can be had at many distributors
 - [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125) (make sure to get the non-touch version without soldered pin headers)
-- [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire) - alternatively you can use [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the color are different! Both cables can be had at many distributors.
+- [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire) - alternatively you can use [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the colors are different! Both cables can be had at many distributors.
 - [USB C Breackout Board](https://www.sparkfun.com/sparkfun-usb-c-breakout.html) (Knock-offs can also be found on Aliexpress and the likes)
 - 3D Printer to print the housing
 - M3x10 Bolt
@@ -64,7 +64,7 @@ After printing make sure that the inside part of the top shell where the buttons
   <img src="pictures/SEN66 IAQ Monitor Wiring.png" alt="Wiring Diagram" width="800"/>
 </p>
 
-The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire), if you use the [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the color are different!
+The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire), if you use the [Sparkfun JST-GHR-06V Cable](https://www.sparkfun.com/breadboard-to-jst-ghr-06v-cable-6-pin-x-1-25mm-pitch.html), just be ware that the colors are different!
 
 - Remove the purple and blue cable from the connector
 - cut the remaining 4 cables to a length of 110mm
@@ -91,7 +91,7 @@ The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte
 3. Connect the SEN66 and push it in
 4. Clip in the wires from the SEN66 and push the remaining wires in to the cavity behind the T-Display-S3
 5. Insert the USB C breakout board into the bottom shell and push the wires in the canal
-6. Close everything up with the screw, make sure not to pinch any wires
+6. Close everything up with the screw, make sure not to pinch any wires. Test the buttons for smooth operation. If the they are not clicky, you either have to smooth the surface on the inside where the button sit, or you can try to have the screw a bit looser.
 
 ## Installation
 
@@ -110,6 +110,9 @@ The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte
 4. Build and upload to your device
 
 ## Sensor Data
+
+<details>
+<summary>Sensor Data</summary>
 
 ### Processed Values
 
@@ -147,6 +150,7 @@ The instruction is for the [SEN5x Jumper Wire](https://sensirion.com/de/produkte
 - If VOC, NOx, or CO2 values are unknown, 0xFFFF is returned
 - During the first 10-11 seconds after power-on or device reset, NOx will be 0xFFFF
 - During the first 5-6 seconds after power-on or device reset, CO2 will be 0xFFFF
+</details>
 
 ## Serial Output
 
