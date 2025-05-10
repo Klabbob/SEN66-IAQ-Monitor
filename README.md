@@ -1,38 +1,68 @@
 # IAQ Monitor
 
-An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
+An Indoor Air Quality Monitor using the Sensirion SEN66 sensor and a [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125)
 
 <p align="center">
-  <img src="pictures/SEN66_IAQ_Monitor_darker.png" alt="SEN66 IAQ Monitor" width="300"/>
+  <img src="pictures/SEN66_IAQ_Monitor_darker.png" alt="SEN66 IAQ Monitor" width="200"/>
 </p>
 
 ## Features
 
 - Real-time monitoring of:
   - Particle mass concentrations (PM1.0, PM2.5, PM4.0, PM10.0)
-  - Environmental parameters (Temperature, Humidity)
-  - Air quality indices (VOC Index, NOx Index)
-  - Gas concentrations (CO2)
-- Raw sensor data access for debugging and calibration
+  - Temperature
+  - Humidity
+  - VOC
+  - NOx
+  - CO2
+- Chart screens with 2min30, 60min and 24h resolution
+- Settings menu:
+  - Perform forced recalibration of CO2
+  - Set alititude for CO2 compensation (apply this before the forced recalibration)
+  - Switch resolution on chart screen
+  - Change screen Brightness
 - Serial output with both processed and raw values
 
 ## Hardware Requirements
 
-- LilyGo T-Display S3 board
-- Sensirion SEN66 sensor
-- I2C connections:
-  - SDA: GPIO 18
-  - SCL: GPIO 17
-  - SEN66 I2C Address: 0x6B
+- [Sensirion SEN66](https://sensirion.com/de/produkte/katalog/SEN66)
+- [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125) (make sure to get the non-touch version without soldered pin headers)
+- [Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire)
+- [USB C Breackout Board](https://www.sparkfun.com/sparkfun-usb-c-breakout.html) (Knock-offs can also be found on Aliexpress and the likes)
+- 3D Printer
+- M3x10 Bolt
+- (optional) [M3 threaded insert](https://www.3djake.com/3djake/threaded-inserts-50-piece-set)
 
 ## Software Requirements
 
-- PlatformIO
-- Arduino Core for ESP32
-- Sensirion I2C SEN66 library (v1.2.0)
-- Sensirion Core library (v0.3.0)
+- VSCode with PlatformIO (or forks of VSCode like [Cursor](https://www.cursor.com/))
 
 ## Hardware Assembly
+
+### 3D Printing
+
+In the `3D Models` folder, you can find the Fusion 360 source file and STEP-File exports of all the parts that you need. You need the following parts:
+- Top Shell - Different versions for:
+  - With Logo for dual color printing or without 
+  - With heat insert or without if you want to screw directly into the plastic
+- Bottom Shell- Two versions for:
+  - Original Sparkfun USB C boards with 1.6mm PCB thickness
+  - Version for some Aliexpress knockoffs that can be only 1.2mm thick
+- Buttons
+
+Print the parts in the following orientation. The only part that needs some paint-on support is the area of the bottom shell where you can find the USB port of the LilyGo T-Display S3
+
+<p align="center">
+  <img src="pictures/3d_print_preview.png" alt="3D Print Preview" width="300"/>
+</p>
+
+After printing make sure that the inside part of the top shell where the buttons should sit is flat.
+
+### Wiring
+
+<p align="center">
+  <img src="pictures/wiring_diagram.png" alt="Wiring Diagram" width="500"/>
+</p>
 
 - Remove the purple and blue cable from the connector
 - cut the remaining 4 cables to a length of 110mm
@@ -47,8 +77,17 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
   - 110 mm with connector:
     - Red to 3V3
     - Black to GND
-    - Green to 18
-    - Yellow to 17
+    - Green to GPIO18
+    - Yellow to GPIO17
+
+### Assembly
+
+1. Insert the LilyGo T-Display-S3 into the top shell
+2. Insert the buttons
+3. Connect the SEN66 and push it in
+4. Clip in the wires from the SEN66 and push the remaining wires in to the cavity behind the T-Display-S3
+5. Insert the USB C breakout board into the bottom shell and push the wires in the canal
+6. Close everything up with the screw, make sure not to pinch any wires
 
 ## Installation
 
@@ -107,51 +146,28 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor with ESP32-S3.
 
 ## Serial Output
 
-The device outputs data in the following format:
+The device outputs data in the following tab-separated format:
 
 ```
-Processed Sensor Readings:
-----------------------------------------
-Particle Mass Concentrations:
-  PM1.0: X.XX μg/m³
-  PM2.5: X.XX μg/m³
-  PM4.0: X.XX μg/m³
-  PM10.0: X.XX μg/m³
-
-Environmental Parameters:
-  Temperature: XX.XX °C
-  Humidity: XX.XX %RH
-
-Air Quality Indices:
-  VOC Index: XXX (0-500)
-  NOx Index: XXX (0-500)
-
-Gas Concentration:
-  CO2: XXX ppm
-
-Raw Sensor Values:
-----------------------------------------
-Environmental Parameters (Raw):
-  Humidity: XXXX (raw) = XX.XX %RH
-  Temperature: XXXX (raw) = XX.XX °C
-
-Gas Sensors (Raw):
-  VOC: XXXX (raw ticks)
-  NOx: XXXX (raw ticks)
-  CO2: XXXX (not interpolated [ppm])
-----------------------------------------
+PM1.0	PM2.5	PM4.0	PM10.0	RH	T	VOC	NOx	CO2	Raw RH	Raw T	Raw VOC	Raw NOx	Raw CO2
+12.3	34.5	56.7	78.9	45.6	23.4	120	80	400	45.60	23.40	100	80	400
 ```
+
+- The first line is a header describing each column.
+- The second and subsequent lines are sensor readings, tab-separated, in the order shown above.
 
 ## Development
 
 ### UI
-The UI is built with SquareLine Studio. Due to the limitiations of the free license tier, the setting screens are designed in a separate project. The projects can be found in the SquareLine Studio UI Source folder. 
+The UI is built with [SquareLine Studio](https://squareline.io/downloads). Due to the limitiations of the free license tier, the setting screens are designed in a separate project. The projects can be found in the `src/SquareLine Studio Projects` folder. 
 
-It is necessary to manually assembly the two ui exports. The main screens will be directly exported to the ui folder, the setting screens to the ui_Settings folder. 
+You can make changes to the UI by opening the project file (.spj) in SquareLine Studio. Go to File->Project Settings and set the UI Files Export Path to the `src/ui` or `src/ui_Settings` respecitively as SquareLine Studio only takes absolut paths. Then make your adjustments and go to Export->Export UI Files.
 
-1. Copy over all screen files (ui_XYZScreen.c) to ui from ui_Settings
-2. Copy over all image files (ui_img_XYZ.c) that are not already in ui
-3. Copy all unique parts of ui.c and ui.h in ui_Settings into the respective files in ui
+It is necessary to manually assembly the two ui exports. The main screens will be directly exported to the `src/ui` folder, the setting screens to the `src/ui_Settings` folder. 
+
+1. Copy over all screen files (ui_XYZScreen.c) to `src/ui` from `src/ui_Settings`
+2. Copy over all image files (ui_img_XYZ.c) that are not already in `src/ui`
+3. Copy all unique parts of ui.c and ui.h in `src/ui_Settings` into the respective files in `src/ui`
 4. Repeat the same for the filelist.txt and CMakeLists.text files.
 
 Contgratulations, you merged both projects. If you add new screens, make sure to update display_task.h and display_task.cpp. If you add a lot of new stuff, you might need to increase LV_MEM_SIZE in lv_conf.h
@@ -163,10 +179,7 @@ Contgratulations, you merged both projects. If you add new screens, make sure to
 
 ### TODO
 
-- [x] Reset charts when runtime_ticks is zero (after altitude or FRC changes)
-- [x] Save altitude setting
 - [ ] Implement offset compensation based on screen brightness
-- [x] Add FRC successful message
 
 ## License
 

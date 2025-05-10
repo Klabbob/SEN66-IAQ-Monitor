@@ -1,0 +1,16 @@
+{
+  "codename": "Arial_Black_22",
+  "ttf_path": "/assets/ARIBLK.TTF",
+  "bin_path": "/assets\\ui_font_Arial_Black_22.bin",
+  "c_path": "/assets\\ui_font_Arial_Black_22.c",
+  "cfg_path": "/assets\\ui_font_Arial_Black_22.fcfg",
+  "size": 22,
+  "bpp": 8,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "°",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

@@ -26,5 +26,8 @@ Thumbs.db
 *.swp
 *.tmp
 
-# New rule for Temperature Parameter Tuning
+# Exlcude Subfolders in Temperature Parameter Tuning
 Temperature Parameter Tuning/*/
+
+# Exlcude Subfolders in pictures
+pictures/*/

@@ -1,0 +1,16 @@
+{
+  "codename": "Arial_Bold_13",
+  "ttf_path": "/assets/ARIALBD.TTF",
+  "bin_path": "/assets\\ui_font_Arial_Bold_13.bin",
+  "c_path": "/assets\\ui_font_Arial_Bold_13.c",
+  "cfg_path": "/assets\\ui_font_Arial_Bold_13.fcfg",
+  "size": 13,
+  "bpp": 8,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "°µ",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}
