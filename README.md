@@ -1,6 +1,6 @@
 # IAQ Monitor
 
-An Indoor Air Quality Monitor using the Sensirion SEN66 sensor and a [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125)
+An Indoor Air Quality Monitor using the [Sensirion SEN66](https://sensirion.com/de/produkte/katalog/SEN66) sensor and a [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125)
 
 <p align="center">
   <img src="pictures/SEN66_IAQ_Monitor_darker.png" alt="SEN66 IAQ Monitor" width="200"/>
@@ -29,7 +29,7 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor and a [LilyGo T-D
 - [LilyGo T-Display-S3](https://lilygo.cc/products/t-display-s3?variant=42284559827125) (make sure to get the non-touch version without soldered pin headers)
 - [Jumper Wire](https://sensirion.com/de/produkte/katalog/SEN5x-jumper-wire)
 - [USB C Breackout Board](https://www.sparkfun.com/sparkfun-usb-c-breakout.html) (Knock-offs can also be found on Aliexpress and the likes)
-- 3D Printer
+- 3D Printer to print housing
 - M3x10 Bolt
 - (optional) [M3 threaded insert](https://www.3djake.com/3djake/threaded-inserts-50-piece-set)
 
@@ -41,7 +41,7 @@ An Indoor Air Quality Monitor using the Sensirion SEN66 sensor and a [LilyGo T-D
 
 ### 3D Printing
 
-In the `3D Models` folder, you can find the Fusion 360 source file and STEP-File exports of all the parts that you need. You need the following parts:
+In the [3D Models](3D%20Models) folder, you can find the Fusion 360 source file and STEP-File exports of all the parts that you need. You need the following parts:
 - Top Shell - Different versions for:
   - With Logo for dual color printing or without 
   - With heat insert or without if you want to screw directly into the plastic
@@ -61,7 +61,7 @@ After printing make sure that the inside part of the top shell where the buttons
 ### Wiring
 
 <p align="center">
-  <img src="pictures/SEN66 IAQ Monitor Wiring.png" alt="Wiring Diagram" width="500"/>
+  <img src="pictures/SEN66 IAQ Monitor Wiring.png" alt="Wiring Diagram" width="800"/>
 </p>
 
 - Remove the purple and blue cable from the connector
@@ -159,15 +159,15 @@ PM1.0	PM2.5	PM4.0	PM10.0	RH	T	VOC	NOx	CO2	Raw RH	Raw T	Raw VOC	Raw NOx	Raw CO2
 ## Development
 
 ### UI
-The UI is built with [SquareLine Studio](https://squareline.io/downloads). Due to the limitiations of the free license tier, the setting screens are designed in a separate project. The projects can be found in the `src/SquareLine Studio Projects` folder. 
+The UI is built with [SquareLine Studio](https://squareline.io/downloads). Due to the limitiations of the free license tier, the setting screens are designed in a separate project. The projects can be found in the [src/ui_Settings](src/ui_Settings) folder. 
 
 You can make changes to the UI by opening the project file (.spj) in SquareLine Studio. Go to File->Project Settings and set the UI Files Export Path to the `src/ui` or `src/ui_Settings` respecitively as SquareLine Studio only takes absolut paths. Then make your adjustments and go to Export->Export UI Files.
 
-It is necessary to manually assembly the two ui exports. The main screens will be directly exported to the `src/ui` folder, the setting screens to the `src/ui_Settings` folder. 
+It is necessary to manually assembly the two ui exports. The main screens will be directly exported to the [src/ui](src/ui) folder, the setting screens to the [src/ui_Settings](src/ui_Settings) folder. 
 
-1. Copy over all screen files (ui_XYZScreen.c) to `src/ui` from `src/ui_Settings`
-2. Copy over all image files (ui_img_XYZ.c) that are not already in `src/ui`
-3. Copy all unique parts of ui.c and ui.h in `src/ui_Settings` into the respective files in `src/ui`
+1. Copy over all screen files (ui_XYZScreen.c) to [src/ui](src/ui) from [src/ui_Settings](src/ui_Settings)
+2. Copy over all image files (ui_img_XYZ.c) that are not already in [src/ui](src/ui)
+3. Copy all unique parts of ui.c and ui.h in [src/ui_Settings](src/ui_Settings) into the respective files in [src/ui](src/ui)
 4. Repeat the same for the filelist.txt and CMakeLists.text files.
 
 Contgratulations, you merged both projects. If you add new screens, make sure to update display_task.h and display_task.cpp. If you add a lot of new stuff, you might need to increase LV_MEM_SIZE in lv_conf.h
