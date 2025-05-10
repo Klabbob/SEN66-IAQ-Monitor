@@ -53,7 +53,7 @@ In the `3D Models` folder, you can find the Fusion 360 source file and STEP-File
 Print the parts in the following orientation. The only part that needs some paint-on support is the area of the bottom shell where you can find the USB port of the LilyGo T-Display S3
 
 <p align="center">
-  <img src="pictures/3d_print_preview.png" alt="3D Print Preview" width="300"/>
+  <img src="pictures/3D_printing_orientation.png" alt="3D Print Preview" width="300"/>
 </p>
 
 After printing make sure that the inside part of the top shell where the buttons should sit is flat.
@@ -61,7 +61,7 @@ After printing make sure that the inside part of the top shell where the buttons
 ### Wiring
 
 <p align="center">
-  <img src="pictures/wiring_diagram.png" alt="Wiring Diagram" width="500"/>
+  <img src="pictures/SEN66 IAQ Monitor Wiring.png" alt="Wiring Diagram" width="500"/>
 </p>
 
 - Remove the purple and blue cable from the connector
