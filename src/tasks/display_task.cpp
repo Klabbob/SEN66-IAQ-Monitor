@@ -263,7 +263,8 @@ void DisplayTask::update_ring_buffer(lv_coord_t* buffer, float value) {
     
     // Add new value at the end, or LV_CHART_POINT_NONE if invalid
     if (scaled_value != -1.0f){ // Valid value
-        buffer[kRingBufferSize - 1] = static_cast<lv_coord_t>(scaled_value);
+        // avoid overflow of lv_coord_t for PM values that go above 3276.6ug/m^3
+        buffer[kRingBufferSize - 1] = static_cast<lv_coord_t>(std::min(scaled_value, 32766.0f));
     }
     else{ // Invalid value
         buffer[kRingBufferSize - 1] = LV_CHART_POINT_NONE;
